@@ -32,7 +32,7 @@ function FeaturedSpotlight({ locale, item, category }: { locale: PublicLocale; i
     <div className={`featured-media${showImage ? ' has-photo' : ''}`}>
       {showImage ? <img src={item.imageUrl!} alt={item.name} loading="lazy" decoding="async" width="960" height="720" onError={() => setImageFailed(true)} /> :
         <div className="featured-art" aria-hidden="true"><span className="featured-art-top">{t.fallbackTop}</span><span className="featured-art-slash" /><span className="featured-art-bottom">{t.fallbackBottom}</span></div>}
-    </div><div className="featured-copy"><p className="eyebrow">{t.selectedFrom} / {category}</p><h3>{item.name}</h3><p className="featured-description">{item.description}</p>
+    </div><div className="featured-copy"><p className="eyebrow">{t.selectedFrom} / {category}</p><h3>{item.name}</h3>{item.description && <p className="featured-description">{item.description}</p>}
       <div className="featured-detail"><span>{formatPrice(item.priceEur, locale)}</span>{!item.available && <strong className="sold-out">{t.soldOutToday}</strong>}</div>
     </div></article>
 }
@@ -51,7 +51,7 @@ function MenuRow({ locale, item }: { locale: PublicLocale; item: MenuItem }) {
   return <article className={`menu-row${item.available ? '' : ' is-sold-out'}`}>
     {item.imageUrl && !imageFailed && <img className="menu-row-image" src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" width="88" height="88" onError={() => setImageFailed(true)} />}
     {item.imageUrl && imageFailed && <span className="menu-row-image menu-row-image-fallback" aria-hidden="true" />}
-    <div className="menu-row-info"><div className="menu-row-title-line"><h4>{item.name}</h4>{item.featured && <span className="menu-tag">{t.featured}</span>}{!item.available && <span className="sold-out">{t.soldOut}</span>}</div><p>{item.description}</p></div>
+    <div className="menu-row-info"><div className="menu-row-title-line"><h4>{item.name}</h4>{item.featured && <span className="menu-tag">{t.featured}</span>}{!item.available && <span className="sold-out">{t.soldOut}</span>}</div>{item.description && <p>{item.description}</p>}</div>
     <span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span>
   </article>
 }

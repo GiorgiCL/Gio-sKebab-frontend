@@ -9,9 +9,10 @@ export function TranslationEditor({ draft, onChange, selected, onSelect, firstLa
   const { t } = useAdminLanguage()
   const update = (key: keyof TextDraft, value: string) => onChange({ ...draft, [selected]: { ...draft[selected], [key]: value } })
   const missing = selected !== 'lt' && !draft[selected].first.trim() && (!secondLabel || !draft[selected].second.trim())
-  const partial = selected !== 'lt' && !missing && (!draft[selected].first.trim() || Boolean(secondLabel && !draft[selected].second.trim()))
-  return <section className="admin-translation-editor" aria-label={t.contentLanguage}>
-    <div className="admin-translation-heading"><h2>{t.contentLanguage}</h2><p>{t.translationHint}</p></div>
+  const partial = selected !== 'lt' && !missing && (!draft[selected].first.trim() || Boolean(secondLabel && draft.lt.second.trim() && !draft[selected].second.trim()))
+  return <section className="admin-translation-editor" aria-label={t.publicContent}>
+    <div className="admin-translation-heading"><h2>{t.publicContent}</h2><p>{t.translationHint}</p></div>
+    <p className="admin-translation-label">{t.contentLanguage}</p>
     <div className="admin-translation-tabs" role="group" aria-label={t.contentLanguage}>
       {publicLocales.map(locale => { const emptyLocale = locale !== 'lt' && !draft[locale].first.trim() && (!secondLabel || !draft[locale].second.trim()); return <button key={locale} type="button" aria-pressed={selected === locale} aria-label={`${locale.toUpperCase()}${emptyLocale ? ` — ${t.missingTranslation}` : ''}`} className={selected === locale ? 'active' : ''} onClick={() => onSelect(locale)}>
         {locale.toUpperCase()}{emptyLocale && <span className="admin-translation-dot" aria-hidden="true" />}

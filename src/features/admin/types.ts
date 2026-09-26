@@ -21,7 +21,7 @@ export interface SpecialDate extends HoursRule { date: string }
 export interface CategoryInput { name: string; displayOrder: number; active: boolean; translations: TranslationMap<CategoryTranslation> }
 export interface Category extends CategoryInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<CategoryTranslation> }
 export interface ItemInput {
-  categoryId: number; name: string; description: string; priceEur: number
+  categoryId: number; name: string; description: string | null; priceEur: number
   active: boolean; available: boolean; featured: boolean; imageUrl: string | null; displayOrder: number; translations: TranslationMap<ItemTranslation>
 }
 export interface Item extends ItemInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<ItemTranslation> }

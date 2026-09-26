@@ -25,6 +25,8 @@ Vite exposes `VITE_` variables to browser code, so never put credentials, tokens
 
 The backend is the sibling project at `../backend`; it is a separately managed Spring Boot application. See its `docs/BACKEND_CURRENT_STATE.md` and linked API/security documents for the authoritative contracts. The homepage consumes `GET /api/public/restaurant`, `/opening-status`, `/opening-hours`, `/menu`, and `/promotions`. Restaurant, menu, and promotion requests send `lang=lt|en|ru|ka`; opening-hours routes remain language independent. The backend resolves missing translated fields to Lithuanian. The frontend has no embedded menu items, contact details, promotion copy, or delivery URLs.
 
+Menu item descriptions are optional under the backend V7 contract. The owner editor sends `null` when the Lithuanian description is cleared, and the public menu omits description text when the resolved value is null. Prices, availability, image URLs, category relationships, and scheduling remain shared across content languages.
+
 All API requests use `credentials: 'include'`. Owner operations use the backend's HttpOnly session cookie, obtain its documented CSRF token, and send `X-CSRF-TOKEN` on state-changing requests. Keep admin hosting same-site with the backend so its `SameSite=Lax` cookie works. Only the KA/RU admin interface preference is stored locally; credentials and tokens are never persisted.
 
 ## Languages and routes

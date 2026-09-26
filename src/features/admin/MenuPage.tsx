@@ -88,8 +88,10 @@ function CategoryForm({ initial, onCancel, onSaved }: { initial: Category | null
     catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
   return <form className="admin-inline-form" onSubmit={submit}><TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.name} />
-    <Field label={t.order} hint={t.orderHint}><input type="number" min="0" step="1" required value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field>
-    <Checkbox label={t.active} hint={t.categoryActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
+    <section className="admin-shared-section" aria-label={t.categoryDetails}><h2>{t.categoryDetails}</h2>
+      <Field label={t.order} hint={t.orderHint}><input type="number" min="0" step="1" required value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field>
+      <Checkbox label={t.active} hint={t.categoryActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
+    </section>
     <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.saveCategory}</button></div>
   </form>
 }
@@ -113,24 +115,25 @@ function ItemForm({ initial, categories, onCancel, onSaved }: { initial: Item | 
   useDirtyGuard(dirty)
   const submit = async (event: React.FormEvent) => {
     event.preventDefault(); if (busy) return
-    if (!draft.lt.first.trim() || !draft.lt.second.trim()) { setContentLocale('lt'); setError(t.lithuanianRequired); return }
+    if (!draft.lt.first.trim()) { setContentLocale('lt'); setError(t.lithuanianRequired); return }
     const priceText = shared.priceEur.replace(',', '.')
     if (!/^\d{1,8}(\.\d{1,2})?$/.test(priceText) || Number(priceText) < .01) { setError(t.priceInvalid); return }
     setBusy(true); setError(null)
     const body: ItemInput = { ...shared, priceEur: Number(priceText), imageUrl: shared.imageUrl?.trim() || null,
-      name: draft.lt.first.trim(), description: draft.lt.second.trim(),
+      name: draft.lt.first.trim(), description: draft.lt.second.trim() || null,
       translations: collectTranslations(draft, (name, description) => ({ name, description })) }
     try { onSaved(await adminRequest<Item>(initial ? `${base}/items/${initial.id}` : `${base}/items`, { method: initial ? 'PUT' : 'POST', body })) }
     catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
-  return <form className="admin-inline-form" onSubmit={submit}><TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.name} secondLabel={t.description} />
+  return <form className="admin-inline-form" onSubmit={submit}><TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.name} secondLabel={t.descriptionOptional} requiredSecond={false} />
+    <section className="admin-shared-section" aria-label={t.itemDetails}><h2>{t.itemDetails}</h2>
     <div className="admin-fields"><Field label={t.category}><select value={shared.categoryId} onChange={event => setShared(current => ({ ...current, categoryId: Number(event.target.value) }))}>{categories.map(category => <option key={category.id} value={category.id}>{category.name}{!category.active ? ` (${t.hidden})` : ''}</option>)}</select></Field>
       <Field label={t.priceEur}><input required type="text" inputMode="decimal" pattern="[0-9]{1,8}([.,][0-9]{1,2})?" value={shared.priceEur} onChange={event => setShared(current => ({ ...current, priceEur: event.target.value }))} placeholder="8,50" /></Field>
       <Field label={t.order} hint={t.itemOrderHint}><input type="number" min="0" step="1" required value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field>
       <Field label={t.imageUrl} hint={t.imageHint}><input type="url" pattern="https?://.+" maxLength={2048} value={shared.imageUrl ?? ''} onChange={event => setShared(current => ({ ...current, imageUrl: event.target.value }))} /></Field></div>
     <div className="admin-checks"><Checkbox label={t.active} hint={t.itemActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
       <Checkbox label={t.available} hint={t.availableHint} checked={shared.available} onChange={available => setShared(current => ({ ...current, available }))} />
-      <Checkbox label={t.featured} hint={t.featuredHint} checked={shared.featured} onChange={featured => setShared(current => ({ ...current, featured }))} /></div>
+      <Checkbox label={t.featured} hint={t.featuredHint} checked={shared.featured} onChange={featured => setShared(current => ({ ...current, featured }))} /></div></section>
     <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.saveItem}</button></div>
   </form>
 }

@@ -48,7 +48,7 @@ export interface OpeningHours {
 export interface MenuItem {
   id: number
   name: string
-  description: string
+  description: string | null
   priceEur: number
   available: boolean
   featured: boolean

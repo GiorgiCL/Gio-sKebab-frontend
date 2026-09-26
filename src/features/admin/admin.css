@@ -54,7 +54,12 @@
 .admin-translation-editor { margin:26px 0; padding:20px; border:1px solid var(--line); background:#f2ecdf; }
 .admin-translation-heading h2 { font-size:1rem; }
 .admin-translation-heading p { max-width:690px; margin-top:6px; color:var(--muted); font-size:.8rem; line-height:1.55; }
+.admin-translation-label { margin-top:18px!important; color:#54483c; font-size:.76rem; font-weight:700; }
 .admin-translation-tabs { display:flex; gap:5px; flex-wrap:wrap; margin-top:18px; border-bottom:1px solid #beb2a3; }
+.admin-translation-label + .admin-translation-tabs { margin-top:5px; }
+.admin-shared-section { display:grid; gap:16px; padding-top:24px; border-top:1px solid var(--line); }
+.admin-shared-section h2 { font-size:1.12rem; letter-spacing:-.02em; }
+.admin-shared-section .admin-checks { margin-top:0; }
 .admin-translation-tabs button { position:relative; min-width:56px; min-height:44px; padding:8px 12px; color:#5a4b3e; background:transparent; border:0; border-bottom:3px solid transparent; font-size:.8rem; font-weight:700; }
 .admin-translation-tabs button.active { color:#8e2c1b; border-color:#a73320; }
 .admin-translation-dot { display:inline-block; width:6px; height:6px; margin-left:5px; border-radius:50%; background:#aa7c32; vertical-align:middle; }

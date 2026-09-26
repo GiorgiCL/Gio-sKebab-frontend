@@ -56,7 +56,7 @@ function RestaurantForm({ initial, onSaved }: { initial: RestaurantProfile | nul
   return <><PageHeading kicker={t.yourBusiness} title={t.restaurant} description={t.restaurantDescription} />
     <form className="admin-form" onSubmit={submit}>
       <TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.restaurantName} secondLabel={t.description} />
-      <div className="admin-form-section"><h2>{t.identityContact}</h2><div className="admin-fields">
+      <div className="admin-form-section"><h2>{t.businessDetails}</h2><div className="admin-fields">
         <SharedField label={t.address} field="address" value={form.address} change={change} required max={500} multiline />
         <SharedField label={t.phone} field="phone" value={form.phone} change={change} required max={50} type="tel" />
         <SharedField label={t.email} field="email" value={form.email ?? ''} change={change} max={254} type="email" />

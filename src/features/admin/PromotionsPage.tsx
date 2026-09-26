@@ -68,10 +68,11 @@ function PromotionForm({ initial, onCancel, onSaved }: { initial: Promotion | nu
     catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
   return <form className="admin-inline-form" onSubmit={submit}><TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.title} secondLabel={t.descriptionOptional} secondMax={500} requiredSecond={false} />
+    <section className="admin-shared-section" aria-label={t.promotionDetails}><h2>{t.promotionDetails}</h2>
     <div className="admin-fields"><Field label={t.startsAt} hint={t.startsHint}><input type="datetime-local" value={shared.startsAt?.slice(0, 16) ?? ''} onChange={event => setShared(current => ({ ...current, startsAt: event.target.value || null }))} /></Field>
       <Field label={t.endsAt} hint={t.endsHint}><input type="datetime-local" value={shared.endsAt?.slice(0, 16) ?? ''} onChange={event => setShared(current => ({ ...current, endsAt: event.target.value || null }))} /></Field>
       <Field label={t.order} hint={t.orderHint}><input required type="number" min="0" step="1" value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field></div>
-    <Checkbox label={t.active} hint={t.promotionActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
+    <Checkbox label={t.active} hint={t.promotionActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} /></section>
     <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.savePromotion}</button></div>
   </form>
 }
