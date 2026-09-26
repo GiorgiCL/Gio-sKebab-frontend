@@ -1,6 +1,6 @@
 # Gio's Kebab frontend
 
-React and TypeScript frontend foundation for Gio's Kebab. The public site and owner CMS will be built in later slices.
+React and TypeScript frontend for Gio's Kebab. The public homepage reads the live backend; the owner CMS remains a route placeholder.
 
 ## Requirements
 
@@ -9,25 +9,29 @@ React and TypeScript frontend foundation for Gio's Kebab. The public site and ow
 
 ## Local setup
 
-```sh
-npm install
-Copy-Item .env.example .env.local # PowerShell; on macOS/Linux use: cp .env.example .env.local
+```powershell
+npm ci
+Copy-Item .env.example .env.local
 npm run dev
 ```
 
-The development server prints its local address. `npm run build` creates the production bundle in `dist/`; `npm run preview` serves that bundle locally. `npm run lint` runs ESLint.
+On macOS/Linux, use `cp .env.example .env.local` instead of `Copy-Item`. The development server prints its local address. `npm run build` creates the production bundle in `dist/`; `npm run preview` serves that bundle locally. `npm run lint` runs ESLint.
 
 ## Environment
 
-Set `VITE_API_BASE_URL` in `.env.local` to the backend origin, such as `http://localhost:8080`. Leave it blank when a same-origin reverse proxy routes `/api` to the backend. Vite exposes `VITE_` variables to browser code, so never put credentials, tokens, or other secrets in them. `.env.example` contains no secrets, and `.env*` files are ignored by Git except for that example.
+Leave `VITE_API_BASE_URL` blank for same-origin `/api` calls. During local development, Vite proxies `/api` to `http://127.0.0.1:8080`; set `DEV_API_PROXY_TARGET` if your backend runs elsewhere. Production hosting needs a same-origin reverse proxy for `/api`, or an explicitly configured same-site backend origin. A direct cross-origin `VITE_API_BASE_URL` requires that exact frontend origin in the backend's `ADMIN_CORS_ALLOWED_ORIGINS` configuration. The frontend does not disable CORS or CSRF.
 
-The backend is the sibling project at `../backend`; it is a separately managed Spring Boot application. See its `docs/BACKEND_CURRENT_STATE.md` and linked API/security documents for the authoritative contracts. The frontend must not guess endpoints or response shapes. For owner operations, preserve the backend's HttpOnly session cookie: requests include credentials, the UI must obtain the documented session CSRF token, and state-changing requests must send `X-CSRF-TOKEN`. Keep admin hosting same-site with the backend so its `SameSite=Lax` cookie works. CSRF protection must remain enabled.
+Vite exposes `VITE_` variables to browser code, so never put credentials, tokens, or other secrets in them. `.env.example` contains no secrets, and `.env*` files are ignored by Git except for that example.
+
+The backend is the sibling project at `../backend`; it is a separately managed Spring Boot application. See its `docs/BACKEND_CURRENT_STATE.md` and linked API/security documents for the authoritative contracts. The homepage consumes `GET /api/public/restaurant`, `/opening-status`, `/opening-hours`, `/menu`, and `/promotions`. It has no embedded menu items, contact details, promotion copy, or delivery URLs. Missing optional fields stay absent; empty promotions hide cleanly. Other resources show loading, empty, or retryable error states.
+
+All API requests use `credentials: 'include'`. For future owner operations, retain the backend's HttpOnly session cookie, obtain the documented session CSRF token, and send `X-CSRF-TOKEN` on state-changing requests. Keep admin hosting same-site with the backend so its `SameSite=Lax` cookie works.
 
 ## Source layout
 
 - `src/app/` contains application routing and shared app setup.
-- `src/features/public/` and `src/features/admin/` hold their route entry components and future product features.
+- `src/features/public/` contains the public page, contract types, data loading, and its scoped components/styles. `src/features/admin/` still holds the admin placeholder.
 - `src/lib/api/` contains the environment-based API origin and small shared request helper.
-- `src/styles.css` contains global styles and the Tailwind entrypoint.
+- `src/styles.css` contains global styles, self-hosted DM Sans/Instrument Serif faces, and the Tailwind entrypoint.
 
-Routes currently provide placeholders at `/` and `/admin`. They are only a routing foundation, not the public site or CMS.
+The public route is `/`; `/admin` remains a placeholder. The supplied logo lives in `src/assets/brand/`. Food photography is intentionally absent until real assets are available. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.
