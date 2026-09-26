@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useBlocker } from 'react-router'
 import { message } from './api'
+import { readAdminLocale } from '../../lib/i18n/locales'
+import { adminText } from './text'
 
 export function useDirtyGuard(dirty: boolean) {
   const blocker = useBlocker(dirty)
@@ -12,13 +14,13 @@ export function useDirtyGuard(dirty: boolean) {
   }, [dirty])
   useEffect(() => {
     if (blocker.state === 'blocked') {
-      if (window.confirm('Discard your unsaved changes?')) blocker.proceed()
+      if (window.confirm(adminText[readAdminLocale()].discardPrompt)) blocker.proceed()
       else blocker.reset()
     }
   }, [blocker])
 }
 
-export function confirmDiscard(dirty: boolean) { return !dirty || window.confirm('Discard your unsaved changes?') }
+export function confirmDiscard(dirty: boolean) { return !dirty || window.confirm(adminText[readAdminLocale()].discardPrompt) }
 
 export function useLoad<T>(load: () => Promise<T>) {
   const [data, setData] = useState<T | null>(null)

@@ -1,61 +1,42 @@
+import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
+import { publicText } from './text'
 import type { OpeningHours, OpeningStatus, Restaurant } from './types'
 
-const euroFormatter = new Intl.NumberFormat('en-IE', {
-  style: 'currency',
-  currency: 'EUR',
-  minimumFractionDigits: 2,
-})
-
-const dateFormatter = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  timeZone: 'UTC',
-})
-
-export function formatPrice(value: number): string {
-  return euroFormatter.format(value)
+export function formatPrice(value: number, locale: PublicLocale): string {
+  return new Intl.NumberFormat(intlLocales[locale], { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format(value)
 }
 
-export function formatTime(value: string | null): string {
-  return value?.slice(0, 5) ?? ''
+export function formatTime(value: string | null): string { return value?.slice(0, 5) ?? '' }
+
+export function formatLocalDate(value: string, locale: PublicLocale): string {
+  return new Intl.DateTimeFormat(intlLocales[locale], { day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .format(new Date(`${value.slice(0, 10)}T12:00:00Z`))
 }
 
-export function formatLocalDate(value: string): string {
-  return dateFormatter.format(new Date(`${value.slice(0, 10)}T12:00:00Z`))
-}
-
-export function openingStatusText(status: OpeningStatus, hours?: OpeningHours): string {
-  if (status.openNow) {
-    return status.closingTime ? `Open now · until ${formatTime(status.closingTime)}` : 'Open now'
-  }
-  if (status.openingTime && status.localTime < status.openingTime) {
-    return `Opens today at ${formatTime(status.openingTime)}`
-  }
-
+export function openingStatusText(status: OpeningStatus, locale: PublicLocale, hours?: OpeningHours): string {
+  const t = publicText[locale]
+  if (status.openNow) return status.closingTime ? `${t.openNow} · ${t.until} ${formatTime(status.closingTime)}` : t.openNow
+  if (status.openingTime && status.localTime < status.openingTime) return `${t.opensToday} ${formatTime(status.openingTime)}`
   if (hours) {
     const date = new Date(`${status.localDate}T12:00:00Z`)
     const weekdays = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-    const weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-
     for (let offset = 1; offset <= 30; offset += 1) {
       date.setUTCDate(date.getUTCDate() + 1)
       const dateKey = date.toISOString().slice(0, 10)
-      const rule = hours.specialDates.find((special) => special.date === dateKey) ??
-        hours.weekly.find((weekly) => weekly.dayOfWeek === weekdays[date.getUTCDay()])
+      const rule = hours.specialDates.find(special => special.date === dateKey) ??
+        hours.weekly.find(weekly => weekly.dayOfWeek === weekdays[date.getUTCDay()])
       if (rule?.open && rule.openingTime) {
-        const day = offset === 1 ? 'tomorrow' : weekdayNames[date.getUTCDay()]
-        return `Closed now · opens ${day} at ${formatTime(rule.openingTime)}`
+        const day = offset === 1 ? t.tomorrow : t.weekdays[date.getUTCDay()]
+        return `${t.closedNow} · ${t.opens} ${day} ${formatTime(rule.openingTime)}`
       }
     }
   }
-
-  return status.closedToday ? 'Closed today' : 'Closed for today'
+  return status.closedToday ? t.closedToday : t.closedForToday
 }
 
 export function deliveryLinks(restaurant: Restaurant | undefined) {
   if (!restaurant) return []
-  return [
-    restaurant.woltUrl ? { label: 'Wolt', url: restaurant.woltUrl } : null,
-    restaurant.boltFoodUrl ? { label: 'Bolt Food', url: restaurant.boltFoodUrl } : null,
-  ].filter((link): link is { label: string; url: string } => link !== null)
+  return [restaurant.woltUrl ? { label: 'Wolt', url: restaurant.woltUrl } : null,
+    restaurant.boltFoodUrl ? { label: 'Bolt Food', url: restaurant.boltFoodUrl } : null]
+    .filter((link): link is { label: string; url: string } => link !== null)
 }

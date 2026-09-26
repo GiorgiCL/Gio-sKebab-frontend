@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useAdminLanguage } from './languageContext'
 
 export function Notice({ text, kind = 'error' }: { text: string | null; kind?: 'error' | 'success' }) {
   return text ? <p className={`admin-notice ${kind}`} role={kind === 'error' ? 'alert' : 'status'}>{text}</p> : null
@@ -17,20 +18,23 @@ export function Checkbox({ label, checked, onChange, hint }: { label: string; ch
 }
 
 export function SubmitBar({ dirty, saving, label = 'Save changes' }: { dirty: boolean; saving: boolean; label?: string }) {
-  return <div className="admin-submit"><span aria-live="polite">{dirty ? 'Unsaved changes' : 'All changes saved'}</span><button className="admin-button" type="submit" disabled={!dirty || saving}>{saving ? 'Saving…' : label}</button></div>
+  const { t } = useAdminLanguage()
+  return <div className="admin-submit"><span aria-live="polite">{dirty ? t.unsaved : t.allSaved}</span><button className="admin-button" type="submit" disabled={!dirty || saving}>{saving ? t.saving : label === 'Save changes' ? t.saveChanges : label}</button></div>
 }
 
-export function Loading() { return <p className="admin-loading" role="status">Loading content…</p> }
+export function Loading() { const { t } = useAdminLanguage(); return <p className="admin-loading" role="status">{t.loading}</p> }
 
 export function LoadError({ error, retry }: { error: string; retry: () => void }) {
-  return <div className="admin-empty"><h2>Could not load this section</h2><p>{error}</p><button type="button" className="admin-button" onClick={retry}>Try again</button></div>
+  const { t } = useAdminLanguage()
+  return <div className="admin-empty"><h2>{t.loadFailed}</h2><p>{error}</p><button type="button" className="admin-button" onClick={retry}>{t.tryAgain}</button></div>
 }
 
 export function DeleteDialog({ name, onCancel, onDelete, busy, error }: { name: string; onCancel: () => void; onDelete: () => void; busy: boolean; error: string | null }) {
+  const { t } = useAdminLanguage()
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => dialog?.close() }, [])
   return <dialog ref={ref} className="admin-dialog" onCancel={event => { if (busy) event.preventDefault(); else onCancel() }} aria-labelledby="delete-title">
-    <h2 id="delete-title">Delete {name}?</h2><p>This cannot be undone. You can also make content inactive to hide it without deleting it.</p>
-    <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={onCancel} disabled={busy}>Cancel</button><button type="button" className="admin-button danger" onClick={onDelete} disabled={busy}>{busy ? 'Deleting…' : 'Delete'}</button></div>
+    <h2 id="delete-title">{t.deleteQuestion} {name}?</h2><p>{t.deleteHelp}</p>
+    <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={onCancel} disabled={busy}>{t.cancel}</button><button type="button" className="admin-button danger" onClick={onDelete} disabled={busy}>{busy ? t.deleting : t.delete}</button></div>
   </dialog>
 }

@@ -1,22 +1,16 @@
 import { useState } from 'react'
+import type { PublicLocale } from '../../lib/i18n/locales'
 import { adminRequest, ApiError, message } from './api'
 import { useDirtyGuard, useLoad } from './hooks'
+import { useAdminLanguage } from './languageContext'
 import { Field, LoadError, Loading, Notice, PageHeading, SubmitBar } from './shared'
+import { TranslationEditor } from './TranslationEditor'
+import { collectTranslations, makeTranslationDraft } from './translationDraft'
 import type { ProfileInput, RestaurantProfile } from './types'
 
-const blank: ProfileInput = { displayName: '', description: '', address: '', phone: '', email: null, googleMapsUrl: '', woltUrl: null, boltFoodUrl: null, instagramUrl: null, facebookUrl: null }
-const fields: { key: keyof ProfileInput; label: string; required?: boolean; type?: string; max: number; hint?: string }[] = [
-  { key: 'displayName', label: 'Restaurant name', required: true, max: 160 },
-  { key: 'description', label: 'Description', required: true, max: 1000, hint: 'Shown on the public site.' },
-  { key: 'address', label: 'Address', required: true, max: 500 },
-  { key: 'phone', label: 'Phone number', required: true, type: 'tel', max: 50 },
-  { key: 'email', label: 'Email', type: 'email', max: 254 },
-  { key: 'googleMapsUrl', label: 'Google Maps URL', required: true, type: 'url', max: 2048, hint: 'An HTTPS link to your location.' },
-  { key: 'woltUrl', label: 'Wolt URL', type: 'url', max: 2048 },
-  { key: 'boltFoodUrl', label: 'Bolt Food URL', type: 'url', max: 2048 },
-  { key: 'instagramUrl', label: 'Instagram URL', type: 'url', max: 2048 },
-  { key: 'facebookUrl', label: 'Facebook URL', type: 'url', max: 2048 },
-]
+type SharedFields = Omit<ProfileInput, 'displayName' | 'description' | 'translations'>
+const blank: SharedFields = { address: '', phone: '', email: null, googleMapsUrl: '', woltUrl: null, boltFoodUrl: null, instagramUrl: null, facebookUrl: null }
+type SharedKey = keyof SharedFields
 
 export function RestaurantPage() {
   const resource = useLoad(async () => {
@@ -25,30 +19,70 @@ export function RestaurantPage() {
   })
   if (resource.loading) return <Loading />
   if (resource.error) return <LoadError error={resource.error} retry={resource.refresh} />
-  return <RestaurantForm key={resource.data?.updatedAt ?? 'new'} initial={resource.data} onSaved={value => resource.setData(value)} />
+  return <RestaurantForm key={resource.data?.updatedAt ?? 'new'} initial={resource.data} onSaved={resource.setData} />
 }
 
 function RestaurantForm({ initial, onSaved }: { initial: RestaurantProfile | null; onSaved: (value: RestaurantProfile) => void }) {
-  const [form, setForm] = useState<ProfileInput>(initial ? pick(initial) : blank)
-  const [saved, setSaved] = useState<ProfileInput>(initial ? pick(initial) : blank)
+  const { t } = useAdminLanguage()
+  const baseline = initial ? pickShared(initial) : blank
+  const initialDraft = makeTranslationDraft({ first: initial?.displayName ?? '', second: initial?.description ?? '' }, {
+    en: { first: initial?.translations.en?.displayName ?? '', second: initial?.translations.en?.description ?? '' },
+    ru: { first: initial?.translations.ru?.displayName ?? '', second: initial?.translations.ru?.description ?? '' },
+    ka: { first: initial?.translations.ka?.displayName ?? '', second: initial?.translations.ka?.description ?? '' },
+  })
+  const [form, setForm] = useState<SharedFields>(baseline)
+  const [draft, setDraft] = useState(initialDraft)
+  const [contentLocale, setContentLocale] = useState<PublicLocale>('lt')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const dirty = JSON.stringify(form) !== JSON.stringify(saved)
+  const dirty = JSON.stringify({ form, draft }) !== JSON.stringify({ form: baseline, draft: initialDraft })
   useDirtyGuard(dirty)
-  const change = (key: keyof ProfileInput, value: string) => setForm(current => ({ ...current, [key]: value }))
+  const change = (key: SharedKey, value: string) => setForm(current => ({ ...current, [key]: value }))
   const submit = async (event: React.FormEvent) => {
     event.preventDefault(); if (saving || !dirty && initial) return
+    if (!draft.lt.first.trim() || !draft.lt.second.trim()) { setContentLocale('lt'); setError(t.lithuanianRequired); return }
     setSaving(true); setError(null); setSuccess(null)
-    const payload: ProfileInput = { ...form, displayName: form.displayName.trim(), description: form.description.trim(), address: form.address.trim(), phone: form.phone.trim(), googleMapsUrl: form.googleMapsUrl.trim(), email: optional(form.email), woltUrl: optional(form.woltUrl), boltFoodUrl: optional(form.boltFoodUrl), instagramUrl: optional(form.instagramUrl), facebookUrl: optional(form.facebookUrl) }
-    try { const result = await adminRequest<RestaurantProfile>('/api/admin/restaurant', { method: 'PUT', body: payload }); setForm(pick(result)); setSaved(pick(result)); onSaved(result); setSuccess('Restaurant details saved.') }
+    const payload: ProfileInput = {
+      ...form, displayName: draft.lt.first.trim(), description: draft.lt.second.trim(),
+      address: form.address.trim(), phone: form.phone.trim(), googleMapsUrl: form.googleMapsUrl.trim(),
+      email: optional(form.email), woltUrl: optional(form.woltUrl), boltFoodUrl: optional(form.boltFoodUrl),
+      instagramUrl: optional(form.instagramUrl), facebookUrl: optional(form.facebookUrl),
+      translations: collectTranslations(draft, (displayName, description) => ({ displayName, description })),
+    }
+    try { onSaved(await adminRequest<RestaurantProfile>('/api/admin/restaurant', { method: 'PUT', body: payload })); setSuccess(t.restaurantSaved) }
     catch (error) { setError(message(error)) } finally { setSaving(false) }
   }
-  return <><PageHeading kicker="Your business" title="Restaurant" description="The essential details customers use to find and contact you." /><form className="admin-form" onSubmit={submit}><div className="admin-form-section"><h2>Identity & contact</h2><div className="admin-fields">{fields.slice(0, 5).map(field => <ProfileField key={field.key} field={field} value={form[field.key] ?? ''} change={change} />)}</div></div><div className="admin-form-section"><h2>Links</h2><p className="admin-muted">Optional links can be left empty. All external links must use HTTPS.</p><div className="admin-fields">{fields.slice(5).map(field => <ProfileField key={field.key} field={field} value={form[field.key] ?? ''} change={change} />)}</div></div><Notice text={error} /><Notice text={success} kind="success" /><SubmitBar dirty={dirty || !initial} saving={saving} label={initial ? 'Save details' : 'Create restaurant'} /></form></>
+  return <><PageHeading kicker={t.yourBusiness} title={t.restaurant} description={t.restaurantDescription} />
+    <form className="admin-form" onSubmit={submit}>
+      <TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.restaurantName} secondLabel={t.description} />
+      <div className="admin-form-section"><h2>{t.identityContact}</h2><div className="admin-fields">
+        <SharedField label={t.address} field="address" value={form.address} change={change} required max={500} multiline />
+        <SharedField label={t.phone} field="phone" value={form.phone} change={change} required max={50} type="tel" />
+        <SharedField label={t.email} field="email" value={form.email ?? ''} change={change} max={254} type="email" />
+      </div></div>
+      <div className="admin-form-section"><h2>{t.links}</h2><p className="admin-muted">{t.linksHint}</p><div className="admin-fields">
+        <SharedField label={t.mapsUrl} hint={t.mapsHint} field="googleMapsUrl" value={form.googleMapsUrl} change={change} required max={2048} type="url" />
+        <SharedField label={t.woltUrl} field="woltUrl" value={form.woltUrl ?? ''} change={change} max={2048} type="url" />
+        <SharedField label={t.boltUrl} field="boltFoodUrl" value={form.boltFoodUrl ?? ''} change={change} max={2048} type="url" />
+        <SharedField label={t.instagramUrl} field="instagramUrl" value={form.instagramUrl ?? ''} change={change} max={2048} type="url" />
+        <SharedField label={t.facebookUrl} field="facebookUrl" value={form.facebookUrl ?? ''} change={change} max={2048} type="url" />
+      </div></div>
+      <Notice text={error} /><Notice text={success} kind="success" />
+      <SubmitBar dirty={dirty || !initial} saving={saving} label={initial ? t.saveDetails : t.createRestaurant} />
+    </form></>
 }
 
-function ProfileField({ field, value, change }: { field: typeof fields[number]; value: string; change: (key: keyof ProfileInput, value: string) => void }) {
-  return <Field label={field.label} hint={field.hint}>{field.key === 'description' || field.key === 'address' ? <textarea value={value} onChange={event => change(field.key, event.target.value)} required={field.required} maxLength={field.max} rows={field.key === 'description' ? 4 : 2} /> : <input type={field.type ?? 'text'} value={value} onChange={event => change(field.key, event.target.value)} required={field.required} maxLength={field.max} pattern={field.type === 'url' ? 'https://.+' : undefined} />}</Field>
+function SharedField({ label, hint, field, value, change, required, max, type, multiline }: {
+  label: string; hint?: string; field: SharedKey; value: string; change: (key: SharedKey, value: string) => void;
+  required?: boolean; max: number; type?: string; multiline?: boolean
+}) {
+  return <Field label={label} hint={hint}>{multiline ?
+    <textarea value={value} onChange={event => change(field, event.target.value)} required={required} maxLength={max} rows={2} /> :
+    <input type={type ?? 'text'} value={value} onChange={event => change(field, event.target.value)} required={required} maxLength={max} pattern={type === 'url' ? 'https://.+' : undefined} />}</Field>
 }
 function optional(value: string | null) { return value?.trim() || null }
-function pick(value: RestaurantProfile): ProfileInput { const { displayName, description, address, phone, email, googleMapsUrl, woltUrl, boltFoodUrl, instagramUrl, facebookUrl } = value; return { displayName, description, address, phone, email, googleMapsUrl, woltUrl, boltFoodUrl, instagramUrl, facebookUrl } }
+function pickShared(value: RestaurantProfile): SharedFields {
+  const { address, phone, email, googleMapsUrl, woltUrl, boltFoodUrl, instagramUrl, facebookUrl } = value
+  return { address, phone, email, googleMapsUrl, woltUrl, boltFoodUrl, instagramUrl, facebookUrl }
+}

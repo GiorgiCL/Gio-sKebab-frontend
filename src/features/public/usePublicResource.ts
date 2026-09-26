@@ -8,11 +8,13 @@ export type Resource<T> = (
 ) & { retry: () => void }
 
 export function usePublicResource<T>(path: `/${string}`, refreshIntervalMs = 0): Resource<T> {
-  const [state, setState] = useState<
+  const [state, setState] = useState<{
+    path: string
+    value:
     | { kind: 'loading' }
     | { kind: 'success'; data: T }
     | { kind: 'error'; status: number | null }
-  >({ kind: 'loading' })
+  }>({ path, value: { kind: 'loading' } })
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
@@ -21,14 +23,15 @@ export function usePublicResource<T>(path: `/${string}`, refreshIntervalMs = 0):
     apiRequest(path, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) {
-          setState({ kind: 'error', status: response.status })
+          if (!controller.signal.aborted) setState({ path, value: { kind: 'error', status: response.status } })
           return
         }
-        setState({ kind: 'success', data: (await response.json()) as T })
+        const data = await response.json() as T
+        if (!controller.signal.aborted) setState({ path, value: { kind: 'success', data } })
       })
       .catch((error: unknown) => {
         if (!controller.signal.aborted) {
-          setState({ kind: 'error', status: null })
+          setState({ path, value: { kind: 'error', status: null } })
           if (import.meta.env.DEV) console.error(`Public request failed: ${path}`, error)
         }
       })
@@ -49,9 +52,9 @@ export function usePublicResource<T>(path: `/${string}`, refreshIntervalMs = 0):
   }, [refreshIntervalMs])
 
   return {
-    ...state,
+    ...(state.path === path ? state.value : { kind: 'loading' as const }),
     retry: () => {
-      setState({ kind: 'loading' })
+      setState({ path, value: { kind: 'loading' } })
       setAttempt((current) => current + 1)
     },
   }

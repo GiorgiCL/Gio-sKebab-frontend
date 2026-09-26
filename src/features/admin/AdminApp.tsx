@@ -1,20 +1,31 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router'
 import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
+import { readAdminLocale, saveAdminLocale, type AdminLocale } from '../../lib/i18n/locales'
 import { adminRequest, clearCsrf, getCsrf, message } from './api'
 import { AuthContext, useOwner } from './authContext'
+import { AdminLanguageContext, useAdminLanguage } from './languageContext'
 import { Notice } from './shared'
+import { adminText } from './text'
 import type { Owner } from './types'
 import './admin.css'
 
 export function AdminGate() {
+  const [locale, setLocale] = useState<AdminLocale>(readAdminLocale)
+  const choose = (next: AdminLocale) => { saveAdminLocale(next); setLocale(next) }
+  useEffect(() => { document.documentElement.lang = locale }, [locale])
+  return <AdminLanguageContext.Provider value={{ locale, setLocale: choose, t: adminText[locale] }}><AdminGateContent /></AdminLanguageContext.Provider>
+}
+
+function AdminGateContent() {
+  const { t } = useAdminLanguage()
   const [owner, setOwner] = useState<Owner | null>(null)
   const [checking, setChecking] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
   const location = useLocation()
   const navigate = useNavigate()
-  useEffect(() => { document.title = location.pathname === '/admin/login' ? "Sign in | Gio's Kebab" : "Owner workspace | Gio's Kebab" }, [location.pathname])
+  useEffect(() => { document.title = location.pathname === '/admin/login' ? `${t.signIn} | Gio's Kebab` : `${t.ownerWorkspace} | Gio's Kebab` }, [location.pathname, t])
   useEffect(() => {
     let current = true
     adminRequest<Owner>('/api/admin/auth/me').then(value => { if (current) setOwner(value) })
@@ -31,14 +42,22 @@ export function AdminGate() {
     await adminRequest<void>('/api/admin/auth/logout', { method: 'POST' })
     clearCsrf(); setOwner(null); navigate('/admin/login', { replace: true })
   }
-  if (checking) return <div className="admin-root admin-center" role="status">Checking your session…</div>
-  if (error) return <div className="admin-root admin-center"><Notice text={error} /><button className="admin-button" onClick={() => { setError(null); setChecking(true); setAttempt(value => value + 1) }}>Try again</button></div>
+  if (checking) return <div className="admin-root admin-center" role="status">{t.checkingSession}</div>
+  if (error) return <div className="admin-root admin-center"><Notice text={error} /><button className="admin-button" onClick={() => { setError(null); setChecking(true); setAttempt(value => value + 1) }}>{t.tryAgain}</button></div>
   if (!owner) return location.pathname === '/admin/login' ? <AdminLogin onLogin={setOwner} /> : <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
   if (location.pathname === '/admin/login') return <Navigate to={(location.state as { from?: string } | null)?.from || '/admin'} replace />
   return <AuthContext.Provider value={{ owner, signOut }}><AdminShell /></AuthContext.Provider>
 }
 
+function AdminLanguageSelector() {
+  const { locale, setLocale, t } = useAdminLanguage()
+  return <div className="admin-languages" role="group" aria-label={t.interfaceLanguage}>
+    {(['ka', 'ru'] as const).map(code => <button key={code} type="button" lang={code} aria-pressed={locale === code} className={locale === code ? 'active' : ''} onClick={() => setLocale(code)}>{code.toUpperCase()}</button>)}
+  </div>
+}
+
 function AdminLogin({ onLogin }: { onLogin: (owner: Owner) => void }) {
+  const { t, locale } = useAdminLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -46,25 +65,45 @@ function AdminLogin({ onLogin }: { onLogin: (owner: Owner) => void }) {
   const location = useLocation()
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); if (busy) return
-    if (new TextEncoder().encode(password).length > 72) { setError('Password is too long.'); return }
+    if (new TextEncoder().encode(password).length > 72) { setError(t.passwordLong); return }
     setBusy(true); setError(null)
     try {
       await getCsrf()
       const owner = await adminRequest<Owner>('/api/admin/auth/login', { method: 'POST', body: { email, password } })
-      clearCsrf() // Login rotates the session ID; obtain its current CSRF token on the first write.
+      clearCsrf()
       setPassword(''); onLogin(owner)
     } catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
-  return <div className="admin-root admin-login"><div className="admin-login-brand"><img src={logoUrl} alt="" /><span>Gio's Kebab</span><p>Owner workspace</p></div><main className="admin-login-panel"><p className="admin-kicker">Welcome back</p><h1>Sign in</h1><p className="admin-muted">Manage the details your customers see.</p>{(location.state as { expired?: boolean } | null)?.expired && <Notice text="Your session expired. Sign in to continue." />}
-    <form onSubmit={onSubmit}><label className="admin-field"><span>Email</span><input autoFocus type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} /></label><label className="admin-field"><span>Password</span><input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label><Notice text={error} /><button className="admin-button" disabled={busy} type="submit">{busy ? 'Signing in…' : 'Sign in'}</button></form><Link className="admin-public-link" to="/">← View public site</Link></main></div>
+  return <div className="admin-root admin-login" lang={locale}>
+    <div className="admin-login-brand"><img src={logoUrl} alt="" /><span>Gio's Kebab</span><p>{t.ownerWorkspace}</p></div>
+    <main className="admin-login-panel"><div className="admin-login-language"><AdminLanguageSelector /></div><p className="admin-kicker">{t.welcome}</p><h1>{t.signIn}</h1><p className="admin-muted">{t.signInDescription}</p>
+      {(location.state as { expired?: boolean } | null)?.expired && <Notice text={t.expiredSignIn} />}
+      <form onSubmit={onSubmit}><label className="admin-field"><span>{t.email}</span><input autoFocus type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} /></label>
+        <label className="admin-field"><span>{t.password}</span><input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
+        <Notice text={error} /><button className="admin-button" disabled={busy} type="submit">{busy ? t.signingIn : t.signIn}</button></form>
+      <Link className="admin-public-link" to="/lt">← {t.viewSite}</Link>
+    </main>
+  </div>
 }
 
-const nav = [{ to: '/admin', label: 'Overview', end: true }, { to: '/admin/restaurant', label: 'Restaurant' }, { to: '/admin/hours', label: 'Hours' }, { to: '/admin/menu', label: 'Menu' }, { to: '/admin/promotions', label: 'Promotions' }]
 function AdminShell() {
   const { owner, signOut } = useOwner()
+  const { t, locale } = useAdminLanguage()
   const [logoutError, setLogoutError] = useState<string | null>(null)
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const nav = [
+    { to: '/admin', label: t.overview, end: true }, { to: '/admin/restaurant', label: t.restaurant },
+    { to: '/admin/hours', label: t.hours }, { to: '/admin/menu', label: t.menu },
+    { to: '/admin/promotions', label: t.promotions },
+  ]
   const logout = async () => { if (loggingOut) return; setLoggingOut(true); setLogoutError(null); try { await signOut() } catch (error) { setLogoutError(message(error)); setLoggingOut(false) } }
-  return <div className="admin-root"><a className="admin-skip" href="#admin-main">Skip to content</a><header className="admin-top"><Link className="admin-brand" to="/admin" onClick={() => setMenuOpen(false)}><img src={logoUrl} alt="" /><span>Gio's Kebab <small>OWNER</small></span></Link><div className="admin-top-actions"><Link to="/" target="_blank" rel="noopener noreferrer">View site ↗</Link><button type="button" className="admin-mobile-toggle" aria-expanded={menuOpen} aria-controls="admin-nav" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? 'Close' : 'Menu'}</button></div></header><div className="admin-layout"><aside id="admin-nav" className={`admin-sidebar${menuOpen ? ' open' : ''}`}><nav aria-label="Admin navigation">{nav.map(item => <NavLink key={item.to} to={item.to} end={item.end} onClick={() => setMenuOpen(false)}>{item.label}</NavLink>)}</nav><div className="admin-account"><span>Signed in as</span><strong>{owner.email}</strong><button type="button" disabled={loggingOut} onClick={logout}>{loggingOut ? 'Signing out…' : 'Sign out'}</button><Notice text={logoutError} /></div></aside><main id="admin-main" className="admin-main" tabIndex={-1}><Outlet /></main></div></div>
+  return <div className="admin-root" lang={locale}>
+    <a className="admin-skip" href="#admin-main">{t.skipContent}</a>
+    <header className="admin-top"><Link className="admin-brand" aria-label="Gio's Kebab" to="/admin" onClick={() => setMenuOpen(false)}><img src={logoUrl} alt="" /><span>Gio's Kebab <small>{t.owner}</small></span></Link>
+      <div className="admin-top-actions"><AdminLanguageSelector /><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link><button type="button" className="admin-mobile-toggle" aria-expanded={menuOpen} aria-controls="admin-nav" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? t.closeMenu : t.menuToggle}</button></div></header>
+    <div className="admin-layout"><aside id="admin-nav" className={`admin-sidebar${menuOpen ? ' open' : ''}`}><nav aria-label={t.adminNavigation}>{nav.map(item => <NavLink key={item.to} to={item.to} end={item.end} onClick={() => setMenuOpen(false)}>{item.label}</NavLink>)}</nav>
+      <div className="admin-account"><span>{t.signedInAs}</span><strong>{owner.email}</strong><button type="button" disabled={loggingOut} onClick={logout}>{loggingOut ? t.signingOut : t.signOut}</button><Notice text={logoutError} /></div></aside>
+      <main id="admin-main" className="admin-main" tabIndex={-1}><Outlet /></main></div>
+  </div>
 }

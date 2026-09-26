@@ -1,6 +1,6 @@
 # Gio's Kebab frontend
 
-React and TypeScript frontend for Gio's Kebab. The public homepage reads the live backend; the owner CMS remains a route placeholder.
+React and TypeScript frontend for Gio's Kebab. The public homepage and owner CMS read the live backend.
 
 ## Requirements
 
@@ -23,15 +23,20 @@ Leave `VITE_API_BASE_URL` blank for same-origin `/api` calls. During local devel
 
 Vite exposes `VITE_` variables to browser code, so never put credentials, tokens, or other secrets in them. `.env.example` contains no secrets, and `.env*` files are ignored by Git except for that example.
 
-The backend is the sibling project at `../backend`; it is a separately managed Spring Boot application. See its `docs/BACKEND_CURRENT_STATE.md` and linked API/security documents for the authoritative contracts. The homepage consumes `GET /api/public/restaurant`, `/opening-status`, `/opening-hours`, `/menu`, and `/promotions`. It has no embedded menu items, contact details, promotion copy, or delivery URLs. Missing optional fields stay absent; empty promotions hide cleanly. Other resources show loading, empty, or retryable error states.
+The backend is the sibling project at `../backend`; it is a separately managed Spring Boot application. See its `docs/BACKEND_CURRENT_STATE.md` and linked API/security documents for the authoritative contracts. The homepage consumes `GET /api/public/restaurant`, `/opening-status`, `/opening-hours`, `/menu`, and `/promotions`. Restaurant, menu, and promotion requests send `lang=lt|en|ru|ka`; opening-hours routes remain language independent. The backend resolves missing translated fields to Lithuanian. The frontend has no embedded menu items, contact details, promotion copy, or delivery URLs.
 
-All API requests use `credentials: 'include'`. For future owner operations, retain the backend's HttpOnly session cookie, obtain the documented session CSRF token, and send `X-CSRF-TOKEN` on state-changing requests. Keep admin hosting same-site with the backend so its `SameSite=Lax` cookie works.
+All API requests use `credentials: 'include'`. Owner operations use the backend's HttpOnly session cookie, obtain its documented CSRF token, and send `X-CSRF-TOKEN` on state-changing requests. Keep admin hosting same-site with the backend so its `SameSite=Lax` cookie works. Only the KA/RU admin interface preference is stored locally; credentials and tokens are never persisted.
+
+## Languages and routes
+
+`/` redirects to `/lt`. The public homepage is available at `/lt`, `/en`, `/ru`, and `/ka`; the URL determines its language and survives refresh. The language switcher changes the route, while public content requests use the backend's separate `lang` query parameter. `/admin` and `/admin/login` stay outside the localized route tree. The owner interface supports KA and RU independently of the LT/EN/RU/KA tabs for editing public content. Lithuanian fields are canonical; saving an edit sends the complete desired translation map for the other languages.
 
 ## Source layout
 
 - `src/app/` contains application routing and shared app setup.
-- `src/features/public/` contains the public page, contract types, data loading, and its scoped components/styles. `src/features/admin/` still holds the admin placeholder.
+- `src/features/public/` contains the public page, static translations, contract types, data loading, and its scoped components/styles. `src/features/admin/` contains the owner CMS and translation editor.
+- `src/lib/i18n/` contains the supported locale types and harmless interface preference helpers.
 - `src/lib/api/` contains the environment-based API origin and small shared request helper.
 - `src/styles.css` contains global styles, self-hosted DM Sans/Instrument Serif faces, and the Tailwind entrypoint.
 
-The public route is `/`; `/admin` remains a placeholder. The supplied logo lives in `src/assets/brand/`. Food photography is intentionally absent until real assets are available. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.
+The supplied logo lives in `src/assets/brand/`. Food photography is intentionally absent until real assets are available. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.

@@ -1,4 +1,5 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, Navigate } from 'react-router'
+import { PublicLocaleLayout, PublicNotFound } from './PublicLocaleLayout'
 import { AdminGate } from '../features/admin/AdminApp'
 import { OverviewPage } from '../features/admin/OverviewPage'
 import { RestaurantPage } from '../features/admin/RestaurantPage'
@@ -8,10 +9,11 @@ import { PromotionsPage } from '../features/admin/PromotionsPage'
 import { PublicHome } from '../features/public/PublicHome'
 
 export const router = createBrowserRouter([
-  {
-    path: '/',
-    Component: PublicHome,
-  },
+  { path: '/', element: <Navigate to="/lt" replace /> },
+  { path: '/:lang', Component: PublicLocaleLayout, children: [
+    { index: true, Component: PublicHome },
+    { path: '*', Component: PublicNotFound },
+  ] },
   {
     path: '/admin', Component: AdminGate,
     children: [
