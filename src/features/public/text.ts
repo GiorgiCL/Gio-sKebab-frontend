@@ -1,6 +1,8 @@
 import type { PublicLocale } from '../../lib/i18n/locales'
 
 const en = {
+  browseMenu: 'Browse the menu', deliveryThrough: 'Delivery via', chooseDeliveryService: 'Choose a delivery service',
+  today: 'Today', viewDetails: 'View details', productDetails: 'Menu details',
   skip: 'Skip to content', menu: 'Menu', close: 'Close', language: 'Website language', visit: 'Visit', orderDelivery: 'Order delivery',
   openMenu: 'Open navigation menu', closeMenu: 'Close navigation menu', primaryNav: 'Primary navigation', mobileNav: 'Mobile navigation', backTopLabel: "Gio's Kebab, back to top", logoAlt: "Gio's Kebab logo",
   heroEyebrow: "Gio's Kebab / from the grill", heroLine1: 'The good', heroLine2: 'kind of', heroAccent: 'heat.', heroSubtitle: 'Good food. Good company. A little fire in the middle of it all.', exploreMenu: 'Explore the menu', scroll: 'Scroll to explore',
@@ -17,6 +19,8 @@ type PublicText = { [K in keyof typeof en]: typeof en[K] extends readonly string
 export const publicText: Record<PublicLocale, PublicText> = {
   en,
   lt: {
+    browseMenu: 'Peržiūrėkite meniu', deliveryThrough: 'Pristatymas per', chooseDeliveryService: 'Pasirinkite pristatymo paslaugą',
+    today: 'Šiandien', viewDetails: 'Peržiūrėti informaciją', productDetails: 'Patiekalo informacija',
     skip: 'Pereiti prie turinio', menu: 'Meniu', close: 'Uždaryti', language: 'Svetainės kalba', visit: 'Aplankykite', orderDelivery: 'Užsisakyti pristatymą',
     openMenu: 'Atidaryti navigaciją', closeMenu: 'Uždaryti navigaciją', primaryNav: 'Pagrindinė navigacija', mobileNav: 'Mobilioji navigacija', backTopLabel: "Gio's Kebab, grįžti į pradžią", logoAlt: "Gio's Kebab logotipas",
     heroEyebrow: "Gio's Kebab / nuo grilio", heroLine1: 'Geras', heroLine2: 'skonis su', heroAccent: 'ugnele.', heroSubtitle: 'Geras maistas. Gera kompanija. Šiek tiek ugnies tarp mūsų.', exploreMenu: 'Peržiūrėti meniu', scroll: 'Slinkti toliau',
@@ -29,6 +33,8 @@ export const publicText: Record<PublicLocale, PublicText> = {
     weekdayLabels: ['Sekmadienis', 'Pirmadienis', 'Antradienis', 'Trečiadienis', 'Ketvirtadienis', 'Penktadienis', 'Šeštadienis'],
   },
   ru: {
+    browseMenu: 'Смотрите меню', deliveryThrough: 'Доставка через', chooseDeliveryService: 'Выберите службу доставки',
+    today: 'Сегодня', viewDetails: 'Подробнее', productDetails: 'О блюде',
     skip: 'Перейти к содержимому', menu: 'Меню', close: 'Закрыть', language: 'Язык сайта', visit: 'Как нас найти', orderDelivery: 'Заказать доставку',
     openMenu: 'Открыть меню навигации', closeMenu: 'Закрыть меню навигации', primaryNav: 'Основная навигация', mobileNav: 'Мобильная навигация', backTopLabel: "Gio's Kebab, наверх страницы", logoAlt: "Логотип Gio's Kebab",
     heroEyebrow: "Gio's Kebab / с гриля", heroLine1: 'Вкус', heroLine2: 'с настоящим', heroAccent: 'огоньком.', heroSubtitle: 'Хорошая еда. Хорошая компания. И немного огня между нами.', exploreMenu: 'Смотреть меню', scroll: 'Листайте дальше',
@@ -41,6 +47,8 @@ export const publicText: Record<PublicLocale, PublicText> = {
     weekdayLabels: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
   },
   ka: {
+    browseMenu: 'იხილეთ მენიუ', deliveryThrough: 'მიტანა', chooseDeliveryService: 'აირჩიეთ მიტანის სერვისი',
+    today: 'დღეს', viewDetails: 'დეტალების ნახვა', productDetails: 'კერძის დეტალები',
     skip: 'შიგთავსზე გადასვლა', menu: 'მენიუ', close: 'დახურვა', language: 'საიტის ენა', visit: 'გვეწვიეთ', orderDelivery: 'მიტანის შეკვეთა',
     openMenu: 'ნავიგაციის გახსნა', closeMenu: 'ნავიგაციის დახურვა', primaryNav: 'მთავარი ნავიგაცია', mobileNav: 'მობილური ნავიგაცია', backTopLabel: "Gio's Kebab, გვერდის დასაწყისში", logoAlt: "Gio's Kebab-ის ლოგო",
     heroEyebrow: "Gio's Kebab / გრილიდან", heroLine1: 'გემო', heroLine2: 'ცეცხლის', heroAccent: 'ელფერით.', heroSubtitle: 'კარგი საჭმელი. კარგი ადამიანები. და ცოტაოდენი ცეცხლი შუაში.', exploreMenu: 'მენიუს ნახვა', scroll: 'გადაახვიეთ ქვემოთ',

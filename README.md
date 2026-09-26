@@ -41,4 +41,5 @@ All API requests use `credentials: 'include'`. Owner operations use the backend'
 - `src/lib/api/` contains the environment-based API origin and small shared request helper.
 - `src/styles.css` contains global styles, self-hosted DM Sans/Instrument Serif faces, and the Tailwind entrypoint.
 
-The supplied logo lives in `src/assets/brand/`. Food photography is intentionally absent until real assets are available. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.
+The supplied logo lives in `src/assets/brand/`. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.
+The public V2 layout uses two optimized WebP copies of the temporary images in `src/assets/restaurant/demo/`: one in the hero and one as decorative menu artwork. They are illustrative development assets, separate from owner-managed menu `imageUrl` values, and should be replaced with verified restaurant photography before launch.
