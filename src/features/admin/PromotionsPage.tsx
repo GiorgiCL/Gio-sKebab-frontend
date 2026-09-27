@@ -36,7 +36,7 @@ function PromotionsContent({ initial }: { initial: Promotion[] }) {
   return <><PageHeading kicker={t.currentOffers} title={t.promotions} description={t.promotionsDescription} action={<button type="button" className="admin-button" onClick={() => setEditing('new')}>{t.addPromotion}</button>} />
     <p className="admin-info">{t.timezoneInfo}{rows[0]?.timeZone ? ` (${rows[0].timeZone})` : ''}</p><Notice text={notice} kind="success" />
     {rows.length === 0 && <div className="admin-empty"><h2>{t.noPromotions}</h2><p>{t.noPromotionsHint}</p></div>}
-    <div className="admin-list">{sorted.map(row => <div className="admin-list-row" key={row.id}><div><strong lang="lt">{row.title}</strong><span>{t.order} {row.displayOrder} · {row.active ? t.active : t.inactive}{row.startsAt ? ` · ${t.from} ${formatLocal(row.startsAt)}` : ''}{row.endsAt ? ` · ${t.until} ${formatLocal(row.endsAt)}` : ''}</span>{row.description && <p lang="lt">{row.description}</p>}</div>
+    <div className="admin-list">{sorted.map(row => <div className="admin-list-row" key={row.id}><div><strong lang="lt">{row.title}</strong><span className="admin-product-meta"><span>{t.order} {row.displayOrder}</span>{row.startsAt && <span>{t.from} {formatLocal(row.startsAt)}</span>}{row.endsAt && <span>{t.until} {formatLocal(row.endsAt)}</span>}</span><span className={`admin-badge${row.active ? '' : ' quiet'}`}>{row.active ? t.active : t.inactive}</span>{row.description && <p lang="lt">{row.description}</p>}</div>
       <div className="admin-actions"><button type="button" className="admin-text-button" onClick={() => setEditing(row)}>{t.edit}</button><button type="button" className="admin-text-button danger-text" onClick={() => { setError(null); setDeleting(row) }}>{t.delete}</button></div></div>)}</div>
     {deleting && <DeleteDialog name={deleting.title} onCancel={() => setDeleting(null)} onDelete={remove} busy={busy} error={error} />}
   </>
@@ -73,7 +73,7 @@ function PromotionForm({ initial, onCancel, onSaved }: { initial: Promotion | nu
       <Field label={t.endsAt} hint={t.endsHint}><input type="datetime-local" value={shared.endsAt?.slice(0, 16) ?? ''} onChange={event => setShared(current => ({ ...current, endsAt: event.target.value || null }))} /></Field>
       <Field label={t.order} hint={t.orderHint}><input required type="number" min="0" step="1" value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field></div>
     <Checkbox label={t.active} hint={t.promotionActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} /></section>
-    <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.savePromotion}</button></div>
+    <Notice text={error} /><div className="admin-actions admin-editor-actions"><span className="admin-dirty-state" aria-live="polite">{dirty ? t.unsaved : initial ? t.allSaved : ''}</span><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.savePromotion}</button></div>
   </form>
 }
 function formatLocal(value: string) { return value.replace('T', ' ').slice(0, 16) }

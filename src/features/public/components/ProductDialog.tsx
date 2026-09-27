@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type RefObject } from 'react'
 import type { PublicLocale } from '../../../lib/i18n/locales'
+import { productImage } from '../demoProductImages'
 import { formatPrice } from '../format'
 import { publicText } from '../text'
 import type { MenuItem } from '../types'
@@ -65,7 +66,7 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ret
       <button ref={closeRef} type="button" className="product-dialog-close" onClick={onClose} aria-label={t.close}>
         <span aria-hidden="true">×</span><span>{t.close}</span>
       </button>
-      <ProductImage item={item} />
+      <ProductImage item={item} locale={locale} />
       <div className="product-dialog-content">
         <p className="product-dialog-kicker">{categoryName ?? t.menu} <span aria-hidden="true">/</span> {t.productDetails}</p>
         <h2 id="product-dialog-title">{item?.name ?? (loading ? t.menuLoading : t.menuErrorTitle)}</h2>
@@ -80,13 +81,15 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ret
   </dialog>
 }
 
-function ProductImage({ item }: { item: MenuItem | undefined }) {
+function ProductImage({ item, locale }: { item: MenuItem | undefined; locale: PublicLocale }) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null)
-  const imageUrl = item?.imageUrl && item.imageUrl !== failedUrl ? item.imageUrl : null
-  return <div className={`product-image-stage${imageUrl ? ' has-image' : ''}`}>
+  const source = item ? productImage(item.id, item.imageUrl) : { url: null, illustrative: false, darkStage: false }
+  const imageUrl = source.url && source.url !== failedUrl ? source.url : null
+  return <div className={`product-image-stage${imageUrl ? ' has-image' : ''}${source.darkStage && imageUrl ? ' is-dark' : ''}`}>
     {imageUrl ? <>
       <img className="product-image-ambient" src={imageUrl} alt="" aria-hidden="true" onError={() => setFailedUrl(imageUrl)} />
-      <img className="product-image-main" src={imageUrl} alt={item?.name ?? ''} onError={() => setFailedUrl(imageUrl)} />
+      <img className="product-image-main" src={imageUrl} alt={source.illustrative ? '' : item?.name ?? ''} onError={() => setFailedUrl(imageUrl)} />
+      {source.illustrative && <span className="product-image-disclaimer">{publicText[locale].illustrativeImage}</span>}
     </> : <div className="product-image-empty" aria-hidden="true"><span className="product-image-emblem">G</span><span>Gio's Kebab</span></div>}
   </div>
 }

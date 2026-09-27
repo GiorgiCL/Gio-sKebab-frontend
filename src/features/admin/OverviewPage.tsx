@@ -25,7 +25,7 @@ export function OverviewPage() {
     { to: '/admin/restaurant', title: t.restaurant, status: data.profile ? data.profile.displayName : t.needsSetup, detail: t.restaurantSummary },
     { to: '/admin/hours', title: t.hours, status: `${data.weekly.length}/7 ${t.weeklyDays} · ${data.special.length} ${t.specialDatesCount}`, detail: t.hoursSummary },
     { to: '/admin/menu', title: t.menu, status: `${data.categories.length} ${t.categoriesCount} · ${data.items.length} ${t.itemsCount}`, detail: t.menuSummary },
-    { to: '/admin/promotions', title: t.promotions, status: `${data.promotions.length} ${t.savedCount}`, detail: t.promotionsSummary },
+    { to: '/admin/promotions', title: t.promotions, status: `${t.activeCount}: ${data.promotions.filter(row => row.active).length} · ${t.savedCount}: ${data.promotions.length}`, detail: t.promotionsSummary },
   ]
   return <><PageHeading kicker={t.ownerWorkspace} title={t.overview} description={t.overviewDescription} />
     <div className="admin-overview-intro"><p>{data.profile && data.weekly.length === 7 ? t.overviewReady : t.overviewSetup}</p><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link></div>

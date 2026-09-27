@@ -10,14 +10,26 @@ import { adminText } from './text'
 import type { Owner } from './types'
 import './admin.css'
 
-export function AdminGate() {
-  const [locale, setLocale] = useState<AdminLocale>(readAdminLocale)
-  const choose = (next: AdminLocale) => { saveAdminLocale(next); setLocale(next) }
-  useEffect(() => { document.documentElement.lang = locale }, [locale])
-  return <AdminLanguageContext.Provider value={{ locale, setLocale: choose, t: adminText[locale] }}><AdminGateContent /></AdminLanguageContext.Provider>
+type AdminTheme = 'light' | 'dark'
+const themeStorageKey = 'gios-admin-theme'
+function readTheme(): AdminTheme {
+  try { return window.localStorage.getItem(themeStorageKey) === 'dark' ? 'dark' : 'light' } catch { return 'light' }
 }
 
-function AdminGateContent() {
+export function AdminGate() {
+  const [locale, setLocale] = useState<AdminLocale>(readAdminLocale)
+  const [theme, setTheme] = useState<AdminTheme>(readTheme)
+  const choose = (next: AdminLocale) => { saveAdminLocale(next); setLocale(next) }
+  const toggleTheme = () => setTheme(current => {
+    const next = current === 'light' ? 'dark' : 'light'
+    try { window.localStorage.setItem(themeStorageKey, next) } catch { /* Theme remains usable for this session. */ }
+    return next
+  })
+  useEffect(() => { document.documentElement.lang = locale }, [locale])
+  return <AdminLanguageContext.Provider value={{ locale, setLocale: choose, t: adminText[locale] }}><AdminGateContent theme={theme} onToggleTheme={toggleTheme} /></AdminLanguageContext.Provider>
+}
+
+function AdminGateContent({ theme, onToggleTheme }: { theme: AdminTheme; onToggleTheme: () => void }) {
   const { t } = useAdminLanguage()
   const [owner, setOwner] = useState<Owner | null>(null)
   const [checking, setChecking] = useState(true)
@@ -42,11 +54,21 @@ function AdminGateContent() {
     await adminRequest<void>('/api/admin/auth/logout', { method: 'POST' })
     clearCsrf(); setOwner(null); navigate('/admin/login', { replace: true })
   }
-  if (checking) return <div className="admin-root admin-center" role="status">{t.checkingSession}</div>
-  if (error) return <div className="admin-root admin-center"><Notice text={error} /><button className="admin-button" onClick={() => { setError(null); setChecking(true); setAttempt(value => value + 1) }}>{t.tryAgain}</button></div>
-  if (!owner) return location.pathname === '/admin/login' ? <AdminLogin onLogin={setOwner} /> : <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
+  if (checking) return <div className="admin-root admin-center" data-theme={theme} role="status">{t.checkingSession}</div>
+  if (error) return <div className="admin-root admin-center" data-theme={theme}><Notice text={error} /><button className="admin-button" onClick={() => { setError(null); setChecking(true); setAttempt(value => value + 1) }}>{t.tryAgain}</button></div>
+  if (!owner) return location.pathname === '/admin/login' ? <AdminLogin onLogin={setOwner} theme={theme} onToggleTheme={onToggleTheme} /> : <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
   if (location.pathname === '/admin/login') return <Navigate to={(location.state as { from?: string } | null)?.from || '/admin'} replace />
-  return <AuthContext.Provider value={{ owner, signOut }}><AdminShell /></AuthContext.Provider>
+  return <AuthContext.Provider value={{ owner, signOut }}><AdminShell theme={theme} onToggleTheme={onToggleTheme} /></AuthContext.Provider>
+}
+
+function ThemeSwitch({ theme, onToggle }: { theme: AdminTheme; onToggle: () => void }) {
+  const { t } = useAdminLanguage()
+  const label = theme === 'dark' ? t.lightMode : t.darkMode
+  return <button type="button" className="admin-theme-switch" onClick={onToggle} aria-label={label} title={label}>
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      {theme === 'dark' ? <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></> : <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z" />}
+    </svg><span>{label}</span>
+  </button>
 }
 
 function AdminLanguageSelector() {
@@ -56,7 +78,7 @@ function AdminLanguageSelector() {
   </div>
 }
 
-function AdminLogin({ onLogin }: { onLogin: (owner: Owner) => void }) {
+function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner) => void; theme: AdminTheme; onToggleTheme: () => void }) {
   const { t, locale } = useAdminLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -74,9 +96,9 @@ function AdminLogin({ onLogin }: { onLogin: (owner: Owner) => void }) {
       setPassword(''); onLogin(owner)
     } catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
-  return <div className="admin-root admin-login" lang={locale}>
+  return <div className="admin-root admin-login" lang={locale} data-theme={theme}>
     <div className="admin-login-brand"><img src={logoUrl} alt="" /><span>Gio's Kebab</span><p>{t.ownerWorkspace}</p></div>
-    <main className="admin-login-panel"><div className="admin-login-language"><AdminLanguageSelector /></div><p className="admin-kicker">{t.welcome}</p><h1>{t.signIn}</h1><p className="admin-muted">{t.signInDescription}</p>
+    <main className="admin-login-panel"><div className="admin-login-language"><AdminLanguageSelector /><ThemeSwitch theme={theme} onToggle={onToggleTheme} /></div><p className="admin-kicker">{t.welcome}</p><h1>{t.signIn}</h1><p className="admin-muted">{t.signInDescription}</p>
       {(location.state as { expired?: boolean } | null)?.expired && <Notice text={t.expiredSignIn} />}
       <form onSubmit={onSubmit}><label className="admin-field"><span>{t.email}</span><input autoFocus type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} /></label>
         <label className="admin-field"><span>{t.password}</span><input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
@@ -86,7 +108,7 @@ function AdminLogin({ onLogin }: { onLogin: (owner: Owner) => void }) {
   </div>
 }
 
-function AdminShell() {
+function AdminShell({ theme, onToggleTheme }: { theme: AdminTheme; onToggleTheme: () => void }) {
   const { owner, signOut } = useOwner()
   const { t, locale } = useAdminLanguage()
   const [logoutError, setLogoutError] = useState<string | null>(null)
@@ -98,12 +120,17 @@ function AdminShell() {
     { to: '/admin/promotions', label: t.promotions },
   ]
   const logout = async () => { if (loggingOut) return; setLoggingOut(true); setLogoutError(null); try { await signOut() } catch (error) { setLogoutError(message(error)); setLoggingOut(false) } }
-  return <div className="admin-root" lang={locale}>
+  return <div className="admin-root" lang={locale} data-theme={theme}>
     <a className="admin-skip" href="#admin-main">{t.skipContent}</a>
     <header className="admin-top"><Link className="admin-brand" aria-label="Gio's Kebab" to="/admin" onClick={() => setMenuOpen(false)}><img src={logoUrl} alt="" /><span>Gio's Kebab <small>{t.owner}</small></span></Link>
-      <div className="admin-top-actions"><AdminLanguageSelector /><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link><button type="button" className="admin-mobile-toggle" aria-expanded={menuOpen} aria-controls="admin-nav" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? t.closeMenu : t.menuToggle}</button></div></header>
+      <div className="admin-top-actions"><AdminLanguageSelector /><ThemeSwitch theme={theme} onToggle={onToggleTheme} /><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link>
+        <button type="button" className="admin-logout" disabled={loggingOut} onClick={logout}>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M13 7l5 5-5 5M8 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          {loggingOut ? t.signingOut : t.signOut}</button>
+        <button type="button" className="admin-mobile-toggle" aria-expanded={menuOpen} aria-controls="admin-nav" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? t.closeMenu : t.menuToggle}</button></div></header>
     <div className="admin-layout"><aside id="admin-nav" className={`admin-sidebar${menuOpen ? ' open' : ''}`}><nav aria-label={t.adminNavigation}>{nav.map(item => <NavLink key={item.to} to={item.to} end={item.end} onClick={() => setMenuOpen(false)}>{item.label}</NavLink>)}</nav>
-      <div className="admin-account"><span>{t.signedInAs}</span><strong>{owner.email}</strong><button type="button" disabled={loggingOut} onClick={logout}>{loggingOut ? t.signingOut : t.signOut}</button><Notice text={logoutError} /></div></aside>
-      <main id="admin-main" className="admin-main" tabIndex={-1}><Outlet /></main></div>
+      <Link className="admin-sidebar-public" to="/lt" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>{t.viewSite} ↗</Link>
+      <div className="admin-account"><span>{t.signedInAs}</span><strong>{owner.email}</strong></div></aside>
+      <main id="admin-main" className="admin-main" tabIndex={-1}><Notice text={logoutError} /><Outlet /></main></div>
   </div>
 }

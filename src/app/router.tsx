@@ -7,10 +7,11 @@ import { HoursPage } from '../features/admin/HoursPage'
 import { MenuPage } from '../features/admin/MenuPage'
 import { PromotionsPage } from '../features/admin/PromotionsPage'
 import { PublicHome } from '../features/public/PublicHome'
+import { PublicRouteError } from '../features/public/PublicRouteError'
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/lt" replace /> },
-  { path: '/:lang', Component: PublicLocaleLayout, children: [
+  { path: '/:lang', Component: PublicLocaleLayout, ErrorBoundary: PublicRouteError, children: [
     { index: true, Component: PublicHome },
     { path: '*', Component: PublicNotFound },
   ] },

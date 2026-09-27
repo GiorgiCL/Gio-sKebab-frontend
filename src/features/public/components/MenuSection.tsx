@@ -73,8 +73,8 @@ export function MenuSection({ locale, resource }: { locale: PublicLocale; resour
 
   return <section className="menu-section" id="menu" aria-labelledby="menu-title" tabIndex={-1}>
     <div className="layout-wrap">
-      <div className="menu-lead"><div className="menu-lead-copy"><p className="eyebrow"><span className="index-line" /> {t.menuIndex}</p>
-        <h2 id="menu-title">{t.menuTitle}</h2>{categories.length > 0 && <p className="menu-lead-count">{String(categories.length).padStart(2, '0')} / {t.menuCategories}</p>}</div>
+      <div className="menu-lead"><div className="menu-lead-copy">
+        <h2 id="menu-title">{t.menuTitle}</h2>{categories.length > 0 && <p className="menu-lead-count">{categories.length} {t.menuCategories}</p>}</div>
         <div className="menu-lead-image" aria-hidden="true"><img src={menuImageUrl} alt="" width="980" height="694" loading="lazy" decoding="async" /></div>
       </div>
       {resource.kind === 'loading' && <div className="menu-loading" role="status" aria-live="polite"><p>{t.menuLoading}</p><div className="skeleton-line" /><div className="skeleton-line short" /><div className="skeleton-line" /></div>}
@@ -83,11 +83,11 @@ export function MenuSection({ locale, resource }: { locale: PublicLocale; resour
       {resource.kind === 'success' && categories.length > 0 && <div className="menu-browser">
         <nav className="category-nav" aria-label={t.menuCategories} ref={navRef}>
           <span className="category-nav-label">{t.menuCategories}</span>
-          {categories.map((category, index) => <a key={category.id} data-category-id={category.id} href={`#menu-category-${category.id}`}
+          {categories.map(category => <a key={category.id} data-category-id={category.id} href={`#menu-category-${category.id}`}
             aria-current={activeId === category.id ? 'location' : undefined} className={activeId === category.id ? 'active' : ''}
-            onClick={event => jumpTo(event, category.id)}><span className="category-nav-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{category.name}</a>)}
+            onClick={event => jumpTo(event, category.id)}>{category.name}</a>)}
         </nav>
-        <div className="menu-categories">{categories.map((category, index) => <Category key={category.id} locale={locale} category={category} index={index + 1}
+        <div className="menu-categories">{categories.map(category => <Category key={category.id} locale={locale} category={category}
           onSelect={(itemId, trigger) => { selectedTrigger.current = trigger; setSelectedId(itemId) }} />)}</div>
       </div>}
     </div>
@@ -96,12 +96,12 @@ export function MenuSection({ locale, resource }: { locale: PublicLocale; resour
   </section>
 }
 
-function Category({ locale, category, index, onSelect }: { locale: PublicLocale; category: MenuCategory; index: number; onSelect: (itemId: number, trigger: HTMLButtonElement) => void }) {
+function Category({ locale, category, onSelect }: { locale: PublicLocale; category: MenuCategory; onSelect: (itemId: number, trigger: HTMLButtonElement) => void }) {
   const t = publicText[locale]
   return <section className="menu-category" id={`menu-category-${category.id}`} aria-labelledby={`category-title-${category.id}`} tabIndex={-1}>
-    <div className="category-intro"><div><span className="category-index" aria-hidden="true">{String(index).padStart(2, '0')} /</span><h3 id={`category-title-${category.id}`}>{category.name}</h3></div>
+    <div className="category-intro"><div><h3 id={`category-title-${category.id}`}>{category.name}</h3></div>
       <p>{category.items.length} {category.items.length === 1 ? t.item : t.items}</p></div>
-    <div className="category-items">{category.items.map(item => <MenuRow key={`${item.id}-${item.imageUrl}-${locale}`} locale={locale} item={item} onSelect={onSelect} />)}</div>
+    <div className="category-items">{category.items.map(item => <MenuRow key={item.id} locale={locale} item={item} onSelect={onSelect} />)}</div>
   </section>
 }
 
