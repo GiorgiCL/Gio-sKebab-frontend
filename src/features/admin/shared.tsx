@@ -32,9 +32,28 @@ export function LoadError({ error, retry }: { error: string; retry: () => void }
 export function DeleteDialog({ name, onCancel, onDelete, busy, error }: { name: string; onCancel: () => void; onDelete: () => void; busy: boolean; error: string | null }) {
   const { t } = useAdminLanguage()
   const ref = useRef<HTMLDialogElement>(null)
-  useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => dialog?.close() }, [])
-  return <dialog ref={ref} className="admin-dialog" onCancel={event => { if (busy) event.preventDefault(); else onCancel() }} aria-labelledby="delete-title">
-    <h2 id="delete-title">{t.deleteQuestion} {name}?</h2><p>{t.deleteHelp}</p>
-    <Notice text={error} /><div className="admin-actions"><button type="button" className="admin-button secondary" onClick={onCancel} disabled={busy}>{t.cancel}</button><button type="button" className="admin-button danger" onClick={onDelete} disabled={busy}>{busy ? t.deleting : t.delete}</button></div>
+  const cancelRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    const dialog = ref.current
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const overflow = document.body.style.overflow
+    const padding = document.body.style.paddingRight
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    document.body.style.overflow = 'hidden'
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`
+    dialog?.showModal()
+    cancelRef.current?.focus({ preventScroll: true })
+    return () => {
+      dialog?.close()
+      document.body.style.overflow = overflow
+      document.body.style.paddingRight = padding
+      // The deleted row may no longer exist; return to the main workspace in that case.
+      const destination = trigger?.isConnected ? trigger : document.getElementById('admin-main')
+      destination?.focus({ preventScroll: true })
+    }
+  }, [])
+  return <dialog ref={ref} className="admin-dialog" onCancel={event => { event.preventDefault(); if (!busy) onCancel() }} aria-labelledby="delete-title" aria-describedby="delete-help">
+    <h2 id="delete-title">{t.deleteQuestion} {name}?</h2><p id="delete-help">{t.deleteHelp}</p>
+    <Notice text={error} /><div className="admin-actions"><button ref={cancelRef} type="button" className="admin-button secondary" onClick={onCancel} disabled={busy}>{t.cancel}</button><button type="button" className="admin-button danger" onClick={onDelete} disabled={busy}>{busy ? t.deleting : t.delete}</button></div>
   </dialog>
 }

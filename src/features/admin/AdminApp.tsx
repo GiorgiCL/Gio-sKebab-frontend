@@ -116,7 +116,7 @@ function AdminShell({ theme, onToggleTheme }: { theme: AdminTheme; onToggleTheme
   const [menuOpen, setMenuOpen] = useState(false)
   const nav = [
     { to: '/admin', label: t.overview, end: true }, { to: '/admin/restaurant', label: t.restaurant },
-    { to: '/admin/hours', label: t.hours }, { to: '/admin/menu', label: t.menu },
+    { to: '/admin/hours', label: t.hours }, { to: '/admin/menu', label: t.menu }, { to: '/admin/lunch-menu', label: t.lunchMenu },
     { to: '/admin/promotions', label: t.promotions },
   ]
   const logout = async () => { if (loggingOut) return; setLoggingOut(true); setLogoutError(null); try { await signOut() } catch (error) { setLogoutError(message(error)); setLoggingOut(false) } }

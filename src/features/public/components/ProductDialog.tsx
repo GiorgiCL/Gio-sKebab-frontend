@@ -5,17 +5,20 @@ import { formatPrice } from '../format'
 import { publicText } from '../text'
 import type { MenuItem } from '../types'
 
+type DetailItem = Pick<MenuItem, 'id' | 'name' | 'description' | 'priceEur' | 'available' | 'imageUrl'>
+
 interface ProductDialogProps {
   locale: PublicLocale
   itemId: number
-  item: MenuItem | undefined
+  item: DetailItem | undefined
   categoryName: string | undefined
   loading: boolean
+  imageKind?: 'menu' | 'lunch'
   returnFocus: RefObject<HTMLButtonElement | null>
   onClose: () => void
 }
 
-export function ProductDialog({ locale, itemId, item, categoryName, loading, returnFocus, onClose }: ProductDialogProps) {
+export function ProductDialog({ locale, itemId, item, categoryName, loading, imageKind = 'menu', returnFocus, onClose }: ProductDialogProps) {
   const t = publicText[locale]
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -35,10 +38,11 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ret
       dialog.close()
       document.body.style.overflow = previousOverflow
       document.body.style.paddingRight = previousPadding
-      const destination = trigger?.isConnected ? trigger : document.querySelector<HTMLButtonElement>(`[data-menu-item-id="${itemId}"]`)
+      const attribute = imageKind === 'lunch' ? 'data-lunch-item-id' : 'data-menu-item-id'
+      const destination = trigger?.isConnected ? trigger : document.querySelector<HTMLButtonElement>(`[${attribute}="${itemId}"]`)
       destination?.focus({ preventScroll: true })
     }
-  }, [itemId, returnFocus])
+  }, [imageKind, itemId, returnFocus])
 
   const closeFromBackdrop = (event: MouseEvent<HTMLDialogElement>) => {
     if (event.target === event.currentTarget) onClose()
@@ -66,7 +70,7 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ret
       <button ref={closeRef} type="button" className="product-dialog-close" onClick={onClose} aria-label={t.close}>
         <span aria-hidden="true">×</span><span>{t.close}</span>
       </button>
-      <ProductImage item={item} locale={locale} />
+      <ProductImage item={item} locale={locale} imageKind={imageKind} />
       <div className="product-dialog-content">
         <p className="product-dialog-kicker">{categoryName ?? t.menu} <span aria-hidden="true">/</span> {t.productDetails}</p>
         <h2 id="product-dialog-title">{item?.name ?? (loading ? t.menuLoading : t.menuErrorTitle)}</h2>
@@ -81,14 +85,14 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ret
   </dialog>
 }
 
-function ProductImage({ item, locale }: { item: MenuItem | undefined; locale: PublicLocale }) {
+function ProductImage({ item, locale, imageKind }: { item: DetailItem | undefined; locale: PublicLocale; imageKind: 'menu' | 'lunch' }) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null)
-  const source = item ? productImage(item.id, item.imageUrl) : { url: null, illustrative: false, darkStage: false }
+  const source = item ? productImage(item.id, item.imageUrl, imageKind) : { url: null, illustrative: false, darkStage: false, drink: false, mask: null }
   const imageUrl = source.url && source.url !== failedUrl ? source.url : null
-  return <div className={`product-image-stage${imageUrl ? ' has-image' : ''}${source.darkStage && imageUrl ? ' is-dark' : ''}`}>
+  return <div className={`product-image-stage${imageUrl ? ' has-image' : ''}${source.darkStage && imageUrl ? ' is-dark' : ''}${source.drink && imageUrl ? ' is-drink' : ''}${source.mask && imageUrl ? ` is-${source.mask}-mask` : ''}`}>
     {imageUrl ? <>
       <img className="product-image-ambient" src={imageUrl} alt="" aria-hidden="true" onError={() => setFailedUrl(imageUrl)} />
-      <img className="product-image-main" src={imageUrl} alt={source.illustrative ? '' : item?.name ?? ''} onError={() => setFailedUrl(imageUrl)} />
+      <img className="product-image-main" src={imageUrl} alt={source.illustrative ? '' : item?.name ?? ''} loading="lazy" decoding="async" onError={() => setFailedUrl(imageUrl)} />
       {source.illustrative && <span className="product-image-disclaimer">{publicText[locale].illustrativeImage}</span>}
     </> : <div className="product-image-empty" aria-hidden="true"><span className="product-image-emblem">G</span><span>Gio's Kebab</span></div>}
   </div>

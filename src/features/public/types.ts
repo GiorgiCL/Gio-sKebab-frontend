@@ -65,6 +65,15 @@ export interface PublicMenu {
   categories: MenuCategory[]
 }
 
+export type Weekday = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
+export interface LunchItem {
+  id: number; name: string; description: string | null; priceEur: number
+  available: boolean; imageUrl: string | null
+}
+export interface PublicLunchMenu {
+  days: { dayOfWeek: Weekday; items: LunchItem[] }[]
+}
+
 export interface Promotion {
   id: number
   title: string

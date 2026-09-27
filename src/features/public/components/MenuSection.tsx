@@ -28,7 +28,7 @@ export function MenuSection({ locale, resource }: { locale: PublicLocale; resour
     let frame = 0
     const update = () => {
       frame = 0
-      const threshold = window.innerWidth <= 900 ? 150 : 112
+      const threshold = window.innerWidth <= 1100 ? 150 : 112
       let current = ids[0]
       for (const id of ids) {
         const section = document.getElementById(`menu-category-${id}`)
@@ -58,7 +58,7 @@ export function MenuSection({ locale, resource }: { locale: PublicLocale; resour
   useEffect(() => {
     const nav = navRef.current
     const link = nav?.querySelector<HTMLAnchorElement>(`[data-category-id="${activeId}"]`)
-    if (!nav || !link || window.innerWidth > 900) return
+    if (!nav || !link || window.innerWidth > 1100) return
     nav.scrollTo({ left: link.offsetLeft - nav.clientWidth / 2 + link.clientWidth / 2, behavior: 'auto' })
   }, [activeId])
 

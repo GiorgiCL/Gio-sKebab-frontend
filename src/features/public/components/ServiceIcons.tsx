@@ -1,12 +1,11 @@
-export function DeliveryServiceIcon({ service }: { service: string }) {
-  if (service === 'Bolt Food') return <svg className="service-icon service-icon-bolt" aria-hidden="true" viewBox="0 0 32 32" fill="none">
-    <path d="M18 2 7 18h8l-2 12 12-18h-8l1-10Z" fill="currentColor" />
-  </svg>
-  return <svg className={`service-icon${service === 'Wolt' ? ' service-icon-wolt' : ''}`} aria-hidden="true" viewBox="0 0 32 32" fill="none">
-    <path d="M7 12h18l-1.5 15h-15L7 12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    <path d="M12 13V9a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    <path d="M12 18h8M12 21h8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-  </svg>
+import woltWordmark from '../../../assets/brand/providers/wolt-wordmark.png'
+
+// Official Wolt wordmark from the Wolt Newsroom media kit (bundled locally).
+export function DeliveryProviderBrand({ service, compact = false }: { service: string; compact?: boolean }) {
+  const isWolt = service === 'Wolt'
+  return <span className={`provider-brand ${isWolt ? 'provider-brand-wolt' : 'provider-brand-bolt'}${compact ? ' is-compact' : ''}`}>
+    {isWolt ? <img src={woltWordmark} alt="Wolt" /> : <span className="provider-brand-name">Bolt Food</span>}
+  </span>
 }
 
 export function ReviewIcon() {

@@ -36,10 +36,7 @@ export function openingStatusText(status: OpeningStatus, locale: PublicLocale, h
 
 export function deliveryLinks(restaurant: Restaurant | undefined) {
   if (!restaurant) return []
-  // Owner-provided destination until boltFoodUrl is populated in the public profile.
-  // The API value always takes precedence; no backend or database change is needed here.
-  const boltFoodUrl = restaurant.boltFoodUrl || 'https://food.bolt.eu/en/9-vilnius/p/105108-gios-kebab-savanoriu-av/?utm_source=share_provider&utm_medium=product&utm_content=menu_header'
   return [restaurant.woltUrl ? { label: 'Wolt', url: restaurant.woltUrl } : null,
-    { label: 'Bolt Food', url: boltFoodUrl }]
+    restaurant.boltFoodUrl ? { label: 'Bolt Food', url: restaurant.boltFoodUrl } : null]
     .filter((link): link is { label: string; url: string } => link !== null)
 }

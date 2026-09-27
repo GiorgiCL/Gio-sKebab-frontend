@@ -5,12 +5,14 @@ import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
 import heroGrillUrl from '../../assets/restaurant/demo/hero-grill.webp'
 import { localeNames, publicLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { MenuSection } from './components/MenuSection'
+import { LunchSection } from './components/LunchSection'
 import { PromotionsSection } from './components/PromotionsSection'
 import { VisitSection } from './components/VisitSection'
-import { DeliveryServiceIcon, InstagramIcon } from './components/ServiceIcons'
+import { DeliveryProviderBrand, InstagramIcon } from './components/ServiceIcons'
 import { deliveryLinks, openingStatusText } from './format'
 import { publicText } from './text'
-import type { OpeningHours, OpeningStatus, PublicMenu, PublicPromotions, Restaurant } from './types'
+import { lunchText } from './lunchText'
+import type { OpeningHours, OpeningStatus, PublicLunchMenu, PublicMenu, PublicPromotions, Restaurant } from './types'
 import type { Resource } from './usePublicResource'
 import { usePublicResource } from './usePublicResource'
 import './public.css'
@@ -23,9 +25,11 @@ export function PublicHome() {
   const openingStatus = usePublicResource<OpeningStatus>('/api/public/opening-status', 60_000)
   const openingHours = usePublicResource<OpeningHours>('/api/public/opening-hours')
   const menu = usePublicResource<PublicMenu>(`/api/public/menu?lang=${locale}`)
+  const lunch = usePublicResource<PublicLunchMenu>(`/api/public/lunch-menu?lang=${locale}`)
   const promotions = usePublicResource<PublicPromotions>(`/api/public/promotions?lang=${locale}`)
   const profile = restaurant.kind === 'success' ? restaurant.data : undefined
   const orderLinks = deliveryLinks(profile)
+  const showLunch = lunch.kind !== 'success' || lunch.data.days.some(day => day.items.length > 0)
 
   useEffect(() => {
     document.documentElement.lang = locale
@@ -35,21 +39,22 @@ export function PublicHome() {
   }, [locale, profile, t])
 
   useEffect(() => {
-    if (location.hash !== '#menu') return
+    if (location.hash !== '#menu' && location.hash !== '#lunch') return
     const frame = requestAnimationFrame(() => {
-      const menu = document.getElementById('menu')
+      const menu = document.getElementById(location.hash.slice(1))
       menu?.scrollIntoView({ behavior: 'instant', block: 'start' })
       menu?.focus({ preventScroll: true })
     })
     return () => cancelAnimationFrame(frame)
-  }, [location.hash, locale])
+  }, [location.hash, locale, lunch.kind])
 
   return <div className="public-site" id="top" lang={locale} translate="no">
     <a className="skip-link" href="#main">{t.skip}</a>
-    <SiteHeader locale={locale} orderLinks={orderLinks} />
+    <SiteHeader locale={locale} orderLinks={orderLinks} showLunch={showLunch} />
     <main id="main">
-      <Hero locale={locale} displayName={profile?.displayName} openingStatus={openingStatus} />
+      <Hero locale={locale} displayName={profile?.displayName} openingStatus={openingStatus} orderLinks={orderLinks} />
       <MenuSection locale={locale} resource={menu} />
+      <LunchSection locale={locale} resource={lunch} openingStatus={openingStatus} openingHours={openingHours} />
       <PromotionsSection locale={locale} resource={promotions} />
       <VisitSection locale={locale} restaurant={restaurant} openingHours={openingHours} openingStatus={openingStatus} />
     </main>
@@ -67,7 +72,7 @@ function LanguageSelector({ locale, onSelect }: { locale: PublicLocale; onSelect
   </nav>
 }
 
-function SiteHeader({ locale, orderLinks }: { locale: PublicLocale; orderLinks: ReturnType<typeof deliveryLinks> }) {
+function SiteHeader({ locale, orderLinks, showLunch }: { locale: PublicLocale; orderLinks: ReturnType<typeof deliveryLinks>; showLunch: boolean }) {
   const t = publicText[locale]
   const [menuOpen, setMenuOpen] = useState(false)
   const toggleRef = useRef<HTMLButtonElement>(null)
@@ -89,7 +94,7 @@ function SiteHeader({ locale, orderLinks }: { locale: PublicLocale; orderLinks: 
       <a className="brand-link" href="#top" aria-label={t.backTopLabel} onClick={closeMenu}><img src={logoUrl} width="1024" height="1024" alt={t.logoAlt} /></a>
       <div className="public-header-right">
         <nav className="desktop-nav" aria-label={t.primaryNav}>
-          <a href="#menu">{t.menu}</a><a href="#visit">{t.visit}</a>
+          <a href="#menu">{t.menu}</a>{showLunch && <a href="#lunch">{lunchText[locale].nav}</a>}<a href="#visit">{t.visit}</a>
           {orderLinks.length > 0 && <HeaderDelivery locale={locale} links={orderLinks} />}
         </nav>
         {orderLinks.length > 0 && <div className="mobile-header-order"><HeaderDelivery locale={locale} links={orderLinks} compact onOpen={closeMenu} /></div>}
@@ -103,11 +108,12 @@ function SiteHeader({ locale, orderLinks }: { locale: PublicLocale; orderLinks: 
     </div>
     <nav id="mobile-navigation" className={`mobile-nav${menuOpen ? ' is-open' : ''}`} aria-label={t.mobileNav} inert={!menuOpen}>
       <a href="#menu" onClick={() => navigateTo('menu')}>{t.menu} <b aria-hidden="true">↗</b></a>
+      {showLunch && <a href="#lunch" onClick={() => navigateTo('lunch')}>{lunchText[locale].nav} <b aria-hidden="true">↗</b></a>}
       <a href="#visit" onClick={() => navigateTo('visit')}>{t.visit} <b aria-hidden="true">↗</b></a>
       {orderLinks.length > 0 && <div className="mobile-delivery" role="group" aria-label={t.orderDelivery}>
         <span className="mobile-delivery-label">{t.orderDelivery}</span>
         <div className="mobile-delivery-links">{orderLinks.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
-          <DeliveryServiceIcon service={link.label} /> {link.label} <b aria-hidden="true">↗</b><span className="sr-only"> ({t.newTab})</span></a>)}</div>
+          <DeliveryProviderBrand service={link.label} /> <b aria-hidden="true">↗</b><span className="sr-only"> ({t.newTab})</span></a>)}</div>
       </div>}
     </nav>
   </header>
@@ -135,24 +141,35 @@ function HeaderDelivery({ locale, links, compact = false, onOpen }: { locale: Pu
       document.removeEventListener('keydown', closeOnEscape)
     }
   }, [])
+  if (links.length === 1) return <a className={`nav-order-direct${compact ? ' is-compact' : ''}`} href={links[0].url} target="_blank" rel="noopener noreferrer" onClick={onOpen} aria-label={`${t.orderDelivery}: ${links[0].label} (${t.newTab})`}>
+    {compact ? <DeliveryProviderBrand service={links[0].label} compact /> : <><span>{t.orderDelivery}</span><DeliveryProviderBrand service={links[0].label} /></>}</a>
   return <details ref={detailsRef} className={`nav-order${compact ? ' is-compact' : ''}`}><summary aria-label={compact ? t.orderDelivery : undefined} onClick={onOpen}>
-    {compact && <DeliveryServiceIcon service="Delivery" />}<span className="nav-order-label">{t.orderDelivery}</span><span className="nav-order-chevron" aria-hidden="true">⌄</span></summary>
+    {compact && <span className="nav-delivery-mark" aria-hidden="true">↗</span>}<span className="nav-order-label">{t.orderDelivery}</span><span className="nav-order-chevron" aria-hidden="true">⌄</span></summary>
     <div className="nav-order-list" role="group" aria-label={t.chooseDeliveryService}>{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer">
-      <DeliveryServiceIcon service={link.label} /><span>{link.label}</span><span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>)}</div>
+      <DeliveryProviderBrand service={link.label} /><span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>)}</div>
   </details>
 }
 
-function Hero({ locale, displayName, openingStatus }: {
-  locale: PublicLocale; displayName?: string; openingStatus: Resource<OpeningStatus>
+function Hero({ locale, displayName, openingStatus, orderLinks }: {
+  locale: PublicLocale; displayName?: string; openingStatus: Resource<OpeningStatus>; orderLinks: ReturnType<typeof deliveryLinks>
 }) {
   const t = publicText[locale]
   const today = openingStatus.kind === 'success' ? openingStatus.data : undefined
+  const browseOrderText = orderLinks.length > 1 ? t.browseOrderBoth : orderLinks[0]?.label === 'Wolt' ? t.browseOrderWolt : t.browseOrderBolt
   return <section className="hero" aria-labelledby="hero-title">
     <div className="hero-media" aria-hidden="true"><img src={heroGrillUrl} width="1680" height="938" alt="" fetchPriority="high" decoding="async" /></div>
     <div className="hero-inner layout-wrap"><div className="hero-copy">
       <h1 id="hero-title">{displayName ?? "Gio's Kebab"}</h1>
-      <div className="hero-actions"><a className="button button-light" href="#menu">{t.exploreMenu} <span aria-hidden="true">↗</span></a></div>
-      {today && <div className="hero-opening" role="status"><span className={`status-dot${today.openNow ? ' is-open' : ''}`} aria-hidden="true" />
+      <div className="hero-ordering">
+        <div className="hero-actions"><a className="button button-light" href="#menu">{t.exploreMenu} <span aria-hidden="true">↗</span></a></div>
+        {orderLinks.length > 0 && <><p className="hero-order-helper">{browseOrderText}</p>
+          <div className={`hero-provider-actions${orderLinks.length === 1 ? ' is-single' : ''}`} role="group" aria-label={t.orderDelivery}>
+            {orderLinks.map(link => <a key={link.label} className="hero-provider-action" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} (${t.newTab})`}>
+              <DeliveryProviderBrand service={link.label} /><span className="hero-provider-arrow" aria-hidden="true">↗</span><span className="sr-only">{t.newTab}</span>
+            </a>)}
+          </div></>}
+      </div>
+      {today && <div className="hero-opening" role="status"><span className={`status-dot${today.openNow ? ' is-open' : ' is-closed'}`} aria-hidden="true" />
         <span>{openingStatusText(today, locale)}{today.source === 'SPECIAL' ? ` · ${t.specialToday}` : ''}</span></div>}
     </div></div>
   </section>
@@ -161,7 +178,6 @@ function Hero({ locale, displayName, openingStatus }: {
 function SiteFooter({ locale, restaurant }: { locale: PublicLocale; restaurant: Restaurant | undefined }) {
   const t = publicText[locale]
   return <footer className="site-footer"><div className="layout-wrap footer-top">
-    <p className="footer-brand">Gio's Kebab<span className="footer-period">.</span></p>
     <a href="#top">{t.backTop} <span aria-hidden="true">↑</span></a>
   </div><div className="layout-wrap footer-bottom">
     <span>© {new Date().getFullYear()} Gio's Kebab</span>

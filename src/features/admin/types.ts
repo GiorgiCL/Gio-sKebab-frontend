@@ -25,6 +25,12 @@ export interface ItemInput {
   active: boolean; available: boolean; featured: boolean; imageUrl: string | null; displayOrder: number; translations: TranslationMap<ItemTranslation>
 }
 export interface Item extends ItemInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<ItemTranslation> }
+export interface LunchInput {
+  dayOfWeek: Day; name: string; description: string | null; priceEur: number
+  active: boolean; available: boolean; displayOrder: number; imageUrl: string | null
+  translations: TranslationMap<ItemTranslation>
+}
+export interface LunchItem extends LunchInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<ItemTranslation> }
 export interface PromotionInput {
   title: string; description: string | null; active: boolean
   startsAt: string | null; endsAt: string | null; displayOrder: number; translations: TranslationMap<PromotionTranslation>
