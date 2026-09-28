@@ -15,6 +15,17 @@ import pearUrl from '../../assets/restaurant/drinks/zandukeli-pear.png'
 import grapeUrl from '../../assets/restaurant/drinks/zandukeli-grape.png'
 import colaUrl from '../../assets/restaurant/drinks/zandukeli-cola.png'
 import ayranUrl from '../../assets/restaurant/drinks/ayran.png'
+import cocaColaThumb from '../../assets/restaurant/drinks/thumbs/coca-cola.webp'
+import cocaColaZeroThumb from '../../assets/restaurant/drinks/thumbs/coca-cola-zero.webp'
+import fantaThumb from '../../assets/restaurant/drinks/thumbs/fanta.webp'
+import spriteThumb from '../../assets/restaurant/drinks/thumbs/sprite.webp'
+import lemonThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-lemon.webp'
+import creamThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-cream.webp'
+import tarhunasThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-tarhunas.webp'
+import pearThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-pear.webp'
+import grapeThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-grape.webp'
+import colaThumb from '../../assets/restaurant/drinks/thumbs/zandukeli-cola.webp'
+import ayranThumb from '../../assets/restaurant/drinks/thumbs/ayran.webp'
 
 const demoProductImages: Readonly<Record<number, { url: string; darkStage?: boolean }>> = {
   1: { url: chickenUrl },
@@ -29,6 +40,14 @@ const drinkImages: Readonly<Record<number, string>> = {
   45: lemonUrl, 46: creamUrl, 47: tarhunasUrl, 48: pearUrl,
   49: grapeUrl, 50: colaUrl, 51: ayranUrl,
 }
+
+const drinkThumbnails: Readonly<Record<number, string>> = {
+  41: cocaColaThumb, 42: cocaColaZeroThumb, 43: fantaThumb, 44: spriteThumb,
+  45: lemonThumb, 46: creamThumb, 47: tarhunasThumb, 48: pearThumb,
+  49: grapeThumb, 50: colaThumb, 51: ayranThumb,
+}
+
+export function drinkThumbnail(itemId: number): string | null { return drinkThumbnails[itemId] ?? null }
 
 export function productImage(itemId: number, ownerImageUrl: string | null, kind: 'menu' | 'lunch' = 'menu'): { url: string | null; illustrative: boolean; darkStage: boolean; drink: boolean; mask: 'can' | 'bottle' | null } {
   if (ownerImageUrl) return { url: ownerImageUrl, illustrative: false, darkStage: false, drink: false, mask: null }

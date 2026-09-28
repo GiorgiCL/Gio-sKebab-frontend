@@ -21,3 +21,15 @@ export function InstagramIcon() {
     <circle cx="17.6" cy="6.5" r="1.15" fill="currentColor" />
   </svg>
 }
+
+export function TikTokIcon() {
+  return <svg className="service-icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M16.7 2h-3.1v13.5a3.1 3.1 0 1 1-2.7-3.1V9.2a6.3 6.3 0 1 0 5.8 6.3V8.8a7 7 0 0 0 4.2 1.3V7a4 4 0 0 1-4.2-5Z" />
+  </svg>
+}
+
+export function FacebookIcon() {
+  return <svg className="service-icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13.8 22v-9.1h3.1l.5-3.5h-3.6V7.2c0-1 .3-1.7 1.8-1.7h1.9V2.3c-.3 0-1.5-.1-2.8-.1-2.8 0-4.7 1.7-4.7 4.8v2.4H7v3.5h3V22h3.8Z" />
+  </svg>
+}

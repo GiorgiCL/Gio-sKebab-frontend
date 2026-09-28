@@ -3,9 +3,10 @@ import type { PublicLocale } from '../../../lib/i18n/locales'
 import { formatPrice } from '../format'
 import { lunchText } from '../lunchText'
 import { publicText } from '../text'
-import type { LunchItem, OpeningHours, OpeningStatus, PublicLunchMenu, Weekday } from '../types'
+import type { OpeningHours, OpeningStatus, PublicLunchMenu, Weekday } from '../types'
 import type { Resource } from '../usePublicResource'
 import { ProductDialog } from './ProductDialog'
+import { MenuThumbnail } from './MenuThumbnail'
 
 const days: Weekday[] = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
 
@@ -60,19 +61,12 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
         <div id="lunch-panel" className="lunch-panel" role="tabpanel" aria-labelledby={`lunch-tab-${selectedDay}`} tabIndex={0}>
           {items.length === 0 ? <p className="lunch-empty">{t.empty}</p> : items.map(item =>
             <article className={`menu-row${item.available ? '' : ' is-sold-out'}`} key={item.id}><button type="button" className="menu-row-trigger" data-lunch-item-id={item.id} onClick={event => { trigger.current = event.currentTarget; setSelectedId(item.id) }}>
-              <LunchThumbnail imageUrl={item.imageUrl} />
-              <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}</span>
-              <span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span><span className="menu-row-arrow" aria-hidden="true">↗</span>
+              <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
+              <MenuThumbnail itemId={item.id} imageUrl={item.imageUrl} kind="lunch" />
             </button></article>)}
         </div>
       </>}
     </div>
     {selectedId !== null && <ProductDialog locale={locale} itemId={selectedId} item={selectedItem} categoryName={t.title} imageKind="lunch" loading={resource.kind === 'loading'} returnFocus={trigger} onClose={() => setSelectedId(null)} />}
   </section>
-}
-
-function LunchThumbnail({ imageUrl }: { imageUrl: LunchItem['imageUrl'] }) {
-  const [failedUrl, setFailedUrl] = useState<string | null>(null)
-  if (!imageUrl || failedUrl === imageUrl) return null
-  return <img className="menu-row-image" src={imageUrl} alt="" width="64" height="64" loading="lazy" decoding="async" onError={() => setFailedUrl(imageUrl)} />
 }

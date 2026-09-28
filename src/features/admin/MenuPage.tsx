@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { adminRequest, ApiError, message } from './api'
+import { AdminImageField } from './AdminImageField'
 import { confirmDiscard, useDirtyGuard, useLoad } from './hooks'
 import { useAdminLanguage } from './languageContext'
 import { Checkbox, DeleteDialog, Field, LoadError, Loading, Notice, PageHeading } from './shared'
@@ -144,10 +145,10 @@ function ItemForm({ initial, categories, defaultCategoryId, onCancel, onSaved }:
   const [contentLocale, setContentLocale] = useState<PublicLocale>('lt')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [failedImage, setFailedImage] = useState<string | null>(null)
-  const dirty = JSON.stringify({ shared, draft }) !== JSON.stringify({ shared: baseline, draft: initialDraft })
-  const imageUrl = shared.imageUrl?.trim() ?? ''
-  const previewUrl = /^https?:\/\//i.test(imageUrl) ? imageUrl : null
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [removePhoto, setRemovePhoto] = useState(false)
+  const [persistedItem, setPersistedItem] = useState<Item | null>(initial)
+  const dirty = JSON.stringify({ shared, draft, selectedFile: selectedFile && [selectedFile.name, selectedFile.size, selectedFile.lastModified], removePhoto }) !== JSON.stringify({ shared: baseline, draft: initialDraft, selectedFile: null, removePhoto: false })
   useDirtyGuard(dirty)
   const submit = async (event: React.FormEvent) => {
     event.preventDefault(); if (busy) return
@@ -158,7 +159,17 @@ function ItemForm({ initial, categories, defaultCategoryId, onCancel, onSaved }:
     const body: ItemInput = { ...shared, priceEur: Number(priceText), imageUrl: shared.imageUrl?.trim() || null,
       name: draft.lt.first.trim(), description: draft.lt.second.trim() || null,
       translations: collectTranslations(draft, (name, description) => ({ name, description })) }
-    try { onSaved(await adminRequest<Item>(initial ? `${base}/items/${initial.id}` : `${base}/items`, { method: initial ? 'PUT' : 'POST', body })) }
+    try {
+      let saved = await adminRequest<Item>(persistedItem ? `${base}/items/${persistedItem.id}` : `${base}/items`, { method: persistedItem ? 'PUT' : 'POST', body })
+      setPersistedItem(saved)
+      if (selectedFile) {
+        const form = new FormData(); form.append('file', selectedFile)
+        saved = await adminRequest<Item>(`${base}/items/${saved.id}/image`, { method: 'POST', body: form })
+      } else if (removePhoto && saved.imageUrl) {
+        saved = await adminRequest<Item>(`${base}/items/${saved.id}/image`, { method: 'DELETE' })
+      }
+      onSaved(saved)
+    }
     catch (error) { setError(message(error)) } finally { setBusy(false) }
   }
   return <form className="admin-inline-form" onSubmit={submit}><TranslationEditor draft={draft} onChange={setDraft} selected={contentLocale} onSelect={setContentLocale} firstLabel={t.name} secondLabel={t.descriptionOptional} requiredSecond={false} />
@@ -169,8 +180,9 @@ function ItemForm({ initial, categories, defaultCategoryId, onCancel, onSaved }:
     <section className="admin-shared-section" aria-label={t.visibility}><h2>{t.visibility}</h2><div className="admin-checks"><Checkbox label={t.active} hint={t.itemActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
       <Checkbox label={t.available} hint={t.availableHint} checked={shared.available} onChange={available => setShared(current => ({ ...current, available }))} />
       <Checkbox label={t.featured} hint={t.featuredHint} checked={shared.featured} onChange={featured => setShared(current => ({ ...current, featured }))} /></div></section>
-    <section className="admin-shared-section" aria-label={t.imageSection}><h2>{t.imageSection}</h2><p className="admin-muted">{t.imageShared}</p><Field label={t.imageUrl} hint={t.imageHint}><input type="url" pattern="https?://.+" maxLength={2048} value={shared.imageUrl ?? ''} onChange={event => { setFailedImage(null); setShared(current => ({ ...current, imageUrl: event.target.value })) }} /></Field>
-      {imageUrl && <div className="admin-image-controls">{previewUrl && failedImage !== previewUrl ? <div className="admin-image-preview"><img src={previewUrl} alt={t.imagePreview} onError={() => setFailedImage(previewUrl)} /></div> : previewUrl && <p className="admin-muted" role="status">{t.imageUnavailable}</p>}<button type="button" className="admin-text-button" onClick={() => { setFailedImage(null); setShared(current => ({ ...current, imageUrl: null })) }}>{t.clearImage}</button></div>}</section>
+    <section className="admin-shared-section" aria-label={t.imageSection}><h2>{t.imageSection}</h2><p className="admin-muted">{t.imageShared}</p>
+      <AdminImageField imageUrl={removePhoto ? null : shared.imageUrl} selectedFile={selectedFile} disabled={busy}
+        onSelect={file => { setSelectedFile(file); setRemovePhoto(false) }} onRemove={() => { setSelectedFile(null); setRemovePhoto(Boolean(shared.imageUrl)) }} /></section>
     <Notice text={error} /><div className="admin-actions admin-editor-actions"><span className="admin-dirty-state" aria-live="polite">{dirty ? t.unsaved : initial ? t.allSaved : ''}</span><button type="button" className="admin-button secondary" onClick={() => { if (confirmDiscard(dirty)) onCancel() }}>{t.cancel}</button><button type="submit" className="admin-button" disabled={busy || !dirty}>{busy ? t.saving : t.saveItem}</button></div>
   </form>
 }

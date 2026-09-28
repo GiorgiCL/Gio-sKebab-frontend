@@ -25,14 +25,15 @@ export async function adminRequest<T>(path: `/api/admin/${string}`, init: { meth
   const t = adminText[readAdminLocale()]
   const method = init.method ?? 'GET'
   const headers: Record<string, string> = {}
-  if (init.body !== undefined) headers['Content-Type'] = 'application/json'
+  const multipart = typeof FormData !== 'undefined' && init.body instanceof FormData
+  if (init.body !== undefined && !multipart) headers['Content-Type'] = 'application/json'
   if (method !== 'GET') {
     const token = csrf ?? await getCsrf()
     headers[token.headerName] = token.token
   }
   let response: Response
   try {
-    response = await apiRequest(path, { method, headers, body: init.body === undefined ? undefined : JSON.stringify(init.body) })
+    response = await apiRequest(path, { method, headers, body: init.body === undefined ? undefined : multipart ? init.body as FormData : JSON.stringify(init.body) })
   } catch {
     throw new ApiError(null, t.networkError)
   }
@@ -62,6 +63,9 @@ export async function adminRequest<T>(path: `/api/admin/${string}`, init: { meth
 
 function errorMessage(status: number, path: string) {
   const t = adminText[readAdminLocale()]
+  if (path.endsWith('/image') && status === 400) return t.imageInvalid
+  if (path.endsWith('/image') && status === 413) return t.imageTooLarge
+  if (path.endsWith('/image') && status === 503) return t.imageUploadFailed
   if (status === 400) return t.invalidEntry
   if (status === 401) return path.endsWith('/login') ? t.credentialsError : t.sessionExpired
   if (status === 403) return t.csrfRefresh
