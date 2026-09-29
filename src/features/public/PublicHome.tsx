@@ -4,6 +4,7 @@ import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
 // Illustrative development asset; owner photography can replace this import later.
 import heroGrillUrl from '../../assets/restaurant/demo/hero-grill.webp'
 import { localeNames, publicLocales, type PublicLocale } from '../../lib/i18n/locales'
+import { capturePublicEvent, deliveryProvider } from '../../lib/analytics'
 import { MenuSection } from './components/MenuSection'
 import { LunchSection } from './components/LunchSection'
 import { PromotionsSection } from './components/PromotionsSection'
@@ -59,6 +60,7 @@ export function PublicHome() {
       <PromotionsSection locale={locale} resource={promotions} />
       <VisitSection locale={locale} restaurant={restaurant} openingHours={openingHours} openingStatus={openingStatus} />
     </main>
+    <div className="closing-signature"><img src={logoUrl} width="1024" height="1024" alt={t.logoAlt} /></div>
     <SiteFooter locale={locale} restaurant={profile} />
   </div>
 }
@@ -82,7 +84,10 @@ function LanguageSelector({ locale, onSelect }: { locale: PublicLocale; onSelect
     <summary aria-label={`${publicText[locale].language}: ${localeNames[locale]}`}>{locale.toUpperCase()} <span aria-hidden="true">⌄</span></summary>
     <div className="public-language-list">{publicLocales.map(code => <Link key={code} to={`/${code}${rest}${location.search}${location.hash}`}
       lang={code} hrefLang={code} aria-label={localeNames[code]} aria-current={locale === code ? 'page' : undefined}
-      className={locale === code ? 'active' : ''} onClick={() => { if (detailsRef.current) detailsRef.current.open = false; onSelect(); requestAnimationFrame(() => detailsRef.current?.querySelector('summary')?.focus()) }}>
+      className={locale === code ? 'active' : ''} onClick={() => {
+        if (code !== locale) capturePublicEvent('language_changed', { from_locale: locale, to_locale: code })
+        if (detailsRef.current) detailsRef.current.open = false; onSelect(); requestAnimationFrame(() => detailsRef.current?.querySelector('summary')?.focus())
+      }}>
       <span>{code.toUpperCase()}</span><span>{localeNames[code]}</span>{locale === code && <span aria-hidden="true">✓</span>}</Link>)}</div>
   </details></nav>
 }
@@ -127,7 +132,11 @@ function SiteHeader({ locale, orderLinks, showLunch }: { locale: PublicLocale; o
       <a href="#visit" onClick={() => navigateTo('visit')}>{t.visit} <b aria-hidden="true">↗</b></a>
       {orderLinks.length > 0 && <div className="mobile-delivery" role="group" aria-label={t.orderDelivery}>
         <span className="mobile-delivery-label">{t.orderDelivery}</span>
-        <div className="mobile-delivery-links">{orderLinks.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
+        <div className="mobile-delivery-links">{orderLinks.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => {
+          const provider = deliveryProvider(link.label)
+          if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'header', locale })
+          closeMenu()
+        }}>
           <DeliveryProviderBrand service={link.label} /> <b aria-hidden="true">↗</b><span className="sr-only"> ({t.newTab})</span></a>)}</div>
       </div>}
     </nav>
@@ -156,11 +165,18 @@ function HeaderDelivery({ locale, links, compact = false, onOpen }: { locale: Pu
       document.removeEventListener('keydown', closeOnEscape)
     }
   }, [])
-  if (links.length === 1) return <a className={`nav-order-direct${compact ? ' is-compact' : ''}`} href={links[0].url} target="_blank" rel="noopener noreferrer" onClick={onOpen} aria-label={`${t.orderDelivery}: ${links[0].label} (${t.newTab})`}>
+  if (links.length === 1) return <a className={`nav-order-direct${compact ? ' is-compact' : ''}`} href={links[0].url} target="_blank" rel="noopener noreferrer" onClick={() => {
+    const provider = deliveryProvider(links[0].label)
+    if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'header', locale })
+    onOpen?.()
+  }} aria-label={`${t.orderDelivery}: ${links[0].label} (${t.newTab})`}>
     <span>{t.orderDelivery}</span>{!compact && <DeliveryProviderBrand service={links[0].label} />}</a>
   return <details ref={detailsRef} className={`nav-order${compact ? ' is-compact' : ''}`}><summary aria-label={compact ? t.orderDelivery : undefined} onClick={onOpen}>
     <span className="nav-order-label">{t.orderDelivery}</span><span className="nav-order-chevron" aria-hidden="true">⌄</span></summary>
-    <div className="nav-order-list" role="group" aria-label={t.chooseDeliveryService}>{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer">
+    <div className="nav-order-list" role="group" aria-label={t.chooseDeliveryService}>{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => {
+      const provider = deliveryProvider(link.label)
+      if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'header', locale })
+    }}>
       <DeliveryProviderBrand service={link.label} /><span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>)}</div>
   </details>
 }
@@ -177,10 +193,13 @@ function Hero({ locale, displayName, description, openingStatus, orderLinks, sho
       <h1 id="hero-title">{displayName ?? "Gio's Kebab"}</h1>
       {description?.trim() && <p className="hero-description">{description}</p>}
       <div className="hero-ordering">
-        <div className="hero-actions"><a className="button button-light" href={showLunch ? '#lunch' : '#menu'}>{t.exploreMenu} <span aria-hidden="true">↗</span></a></div>
+        <div className="hero-actions"><a className="button button-light" href={showLunch ? '#lunch' : '#menu'} onClick={() => capturePublicEvent('menu_explore_clicked', { locale })}>{t.exploreMenu} <span aria-hidden="true">↗</span></a></div>
         {orderLinks.length > 0 && <><p className="hero-order-helper">{browseOrderText}</p>
           <div className={`hero-provider-actions${orderLinks.length === 1 ? ' is-single' : ''}`} role="group" aria-label={t.orderDelivery}>
-            {orderLinks.map(link => <a key={link.label} className="hero-provider-action" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} (${t.newTab})`}>
+            {orderLinks.map(link => <a key={link.label} className="hero-provider-action" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} (${t.newTab})`} onClick={() => {
+              const provider = deliveryProvider(link.label)
+              if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'hero', locale })
+            }}>
               <DeliveryProviderBrand service={link.label} /><span className="hero-provider-arrow" aria-hidden="true">↗</span><span className="sr-only">{t.newTab}</span>
             </a>)}
           </div></>}
@@ -198,9 +217,9 @@ function SiteFooter({ locale, restaurant }: { locale: PublicLocale; restaurant: 
   </div><div className="layout-wrap footer-bottom">
     <span>© {new Date().getFullYear()} Gio's Kebab</span>
     <div className="footer-socials">
-      {restaurant?.instagramUrl && <a href={restaurant.instagramUrl} target="_blank" rel="noopener noreferrer"><InstagramIcon /> Instagram <span className="sr-only">({t.newTab})</span></a>}
-      <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok (${t.newTab})`}><TikTokIcon /> TikTok</a>
-      <a href={restaurant?.facebookUrl || socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook (${t.newTab})`}><FacebookIcon /> Facebook</a>
+      {restaurant?.instagramUrl && <a href={restaurant.instagramUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('social_clicked', { provider: 'instagram', locale })}><InstagramIcon /> Instagram <span className="sr-only">({t.newTab})</span></a>}
+      <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'tiktok', locale })}><TikTokIcon /> TikTok</a>
+      <a href={restaurant?.facebookUrl || socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'facebook', locale })}><FacebookIcon /> Facebook</a>
     </div>
   </div></footer>
 }

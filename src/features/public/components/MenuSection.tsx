@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router'
 // Illustrative development asset, separate from owner-managed menu item images.
 import menuImageUrl from '../../../assets/restaurant/demo/kebab-cutout.webp'
 import type { PublicLocale } from '../../../lib/i18n/locales'
+import { capturePublicEvent } from '../../../lib/analytics'
 import { formatPrice } from '../format'
 import { publicText } from '../text'
 import type { MenuCategory, MenuItem, PublicMenu } from '../types'
@@ -65,6 +66,8 @@ export function MenuSection({ locale, resource, showLunch }: { locale: PublicLoc
   }, [activeId])
 
   const jumpTo = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    const category = categories.find(entry => id === `menu-category-${entry.id}`)
+    if (category) capturePublicEvent('menu_category_selected', { category_id: category.id, category_name: category.name, locale })
     event.preventDefault()
     navigate({ hash: `#${id}` }, { preventScrollReset: true })
     const target = document.getElementById(id)
@@ -92,7 +95,11 @@ export function MenuSection({ locale, resource, showLunch }: { locale: PublicLoc
             onClick={event => jumpTo(event, id)}>{category.name}</a> })}
         </nav>
         <div className="menu-categories">{categories.map(category => <Category key={category.id} locale={locale} category={category}
-          onSelect={(itemId, trigger) => { selectedTrigger.current = trigger; setSelectedId(itemId) }} />)}</div>
+          onSelect={(itemId, trigger) => {
+            const item = category.items.find(entry => entry.id === itemId)
+            if (item) capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_id: category.id, category_name: category.name, source: 'menu', locale })
+            selectedTrigger.current = trigger; setSelectedId(itemId)
+          }} />)}</div>
       </div>}
     </div>
     {selectedId !== null && <ProductDialog locale={locale} itemId={selectedId} item={selectedItem} categoryName={selectedCategory?.name}

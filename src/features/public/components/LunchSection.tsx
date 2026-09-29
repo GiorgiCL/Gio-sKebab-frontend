@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { PublicLocale } from '../../../lib/i18n/locales'
+import { capturePublicEvent } from '../../../lib/analytics'
 import { formatPrice } from '../format'
 import { lunchText } from '../lunchText'
 import { publicText } from '../text'
@@ -42,10 +43,14 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
   const items = publicDays.find(day => day.dayOfWeek === selectedDay)?.items ?? []
   const selectedItem = publicDays.flatMap(day => day.items).find(item => item.id === selectedId)
   const label = (day: Weekday) => common.weekdayLabels[(days.indexOf(day) + 1) % 7]
+  const selectDay = (day: Weekday) => {
+    if (day !== selectedDay) capturePublicEvent('lunch_day_selected', { weekday: day, locale })
+    setChosenDay(day)
+  }
   const handleKeys = (event: KeyboardEvent<HTMLDivElement>) => {
     const current = days.indexOf(selectedDay)
     const next = event.key === 'ArrowRight' ? (current + 1) % 7 : event.key === 'ArrowLeft' ? (current + 6) % 7 : event.key === 'Home' ? 0 : event.key === 'End' ? 6 : -1
-    if (next >= 0) { event.preventDefault(); setChosenDay(days[next]); tabs.current[next]?.focus() }
+    if (next >= 0) { event.preventDefault(); selectDay(days[next]); tabs.current[next]?.focus() }
   }
   return <section className="lunch-section" id="lunch" aria-labelledby="lunch-title" tabIndex={-1}>
     <div className="layout-wrap">
@@ -56,11 +61,14 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
         <div className="lunch-tabs" role="tablist" aria-label={t.title} onKeyDown={handleKeys} ref={tabStrip}>
           {days.map((day, index) => <button key={day} ref={node => { tabs.current[index] = node }} type="button" role="tab"
             id={`lunch-tab-${day}`} aria-controls="lunch-panel" aria-selected={selectedDay === day} tabIndex={selectedDay === day ? 0 : -1}
-            onClick={() => setChosenDay(day)}>{label(day)}{today === day && <small>{t.today}</small>}</button>)}
+            onClick={() => selectDay(day)}>{label(day)}{today === day && <small>{t.today}</small>}</button>)}
         </div>
         <div id="lunch-panel" className="lunch-panel" role="tabpanel" aria-labelledby={`lunch-tab-${selectedDay}`} tabIndex={0}>
           {items.length === 0 ? <p className="lunch-empty">{t.empty}</p> : items.map(item =>
-            <article className={`menu-row${item.available ? '' : ' is-sold-out'}`} key={item.id}><button type="button" className="menu-row-trigger" data-lunch-item-id={item.id} onClick={event => { trigger.current = event.currentTarget; setSelectedId(item.id) }}>
+            <article className={`menu-row${item.available ? '' : ' is-sold-out'}`} key={item.id}><button type="button" className="menu-row-trigger" data-lunch-item-id={item.id} onClick={event => {
+              capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_name: t.title, source: 'lunch', locale })
+              trigger.current = event.currentTarget; setSelectedId(item.id)
+            }}>
               <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
               <MenuThumbnail itemId={item.id} imageUrl={item.imageUrl} kind="lunch" />
             </button></article>)}

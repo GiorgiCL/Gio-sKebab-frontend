@@ -15,7 +15,9 @@ export function formatLocalDate(value: string, locale: PublicLocale): string {
 
 export function openingStatusText(status: OpeningStatus, locale: PublicLocale, hours?: OpeningHours): string {
   const t = publicText[locale]
-  if (status.openNow) return status.closingTime ? `${t.openNow} · ${t.until} ${formatTime(status.closingTime)}` : t.openNow
+  if (status.openNow) return status.closingTime
+    ? `${t.openNow} · ${locale === 'ka' ? `${formatTime(status.closingTime)} ${t.until}` : `${t.until} ${formatTime(status.closingTime)}`}`
+    : t.openNow
   if (status.openingTime && status.localTime < status.openingTime) return `${t.opensToday} ${formatTime(status.openingTime)}`
   if (hours) {
     const date = new Date(`${status.localDate}T12:00:00Z`)
