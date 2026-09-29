@@ -82,6 +82,7 @@ function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner)
   const { t, locale } = useAdminLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const location = useLocation()
@@ -91,7 +92,7 @@ function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner)
     setBusy(true); setError(null)
     try {
       await getCsrf()
-      const owner = await adminRequest<Owner>('/api/admin/auth/login', { method: 'POST', body: { email, password } })
+      const owner = await adminRequest<Owner>('/api/admin/auth/login', { method: 'POST', body: { email, password, rememberMe } })
       clearCsrf()
       setPassword(''); onLogin(owner)
     } catch (error) { setError(message(error)) } finally { setBusy(false) }
@@ -102,6 +103,7 @@ function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner)
       {(location.state as { expired?: boolean } | null)?.expired && <Notice text={t.expiredSignIn} />}
       <form onSubmit={onSubmit}><label className="admin-field"><span>{t.email}</span><input autoFocus type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} /></label>
         <label className="admin-field"><span>{t.password}</span><input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
+        <label className="admin-remember"><input type="checkbox" checked={rememberMe} onChange={event => setRememberMe(event.target.checked)} /><span>{t.rememberMe}</span></label>
         <Notice text={error} /><button className="admin-button" disabled={busy} type="submit">{busy ? t.signingIn : t.signIn}</button></form>
       <Link className="admin-public-link" to="/lt">← {t.viewSite}</Link>
     </main>

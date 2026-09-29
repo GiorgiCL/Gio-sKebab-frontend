@@ -5,7 +5,7 @@ type Placement = 'hero' | 'header' | 'visit/order-delivery'
 type SocialProvider = 'instagram' | 'facebook' | 'tiktok'
 
 type Events = {
-  product_opened: { product_id: number; product_name: string; category_id?: number; category_name?: string; source: 'menu' | 'lunch'; locale: PublicLocale }
+  product_opened: { product_id: number; product_name: string; category_id?: number; category_key: string; category_name?: string; source: 'menu' | 'lunch'; locale: PublicLocale }
   menu_category_selected: { category_id: number; category_name: string; locale: PublicLocale }
   lunch_day_selected: { weekday: string; locale: PublicLocale }
   delivery_provider_clicked: { provider: Provider; placement: Placement; locale: PublicLocale }

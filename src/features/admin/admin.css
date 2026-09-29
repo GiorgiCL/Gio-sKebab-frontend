@@ -131,6 +131,8 @@
 .admin-login-panel { display:flex; flex-direction:column; justify-content:center; width:min(100%,570px); padding:60px clamp(24px,6vw,90px); }
 .admin-login-panel .admin-muted { margin-bottom:24px; }
 .admin-login-panel form { display:grid; gap:18px; }
+.admin-remember { display:flex; align-items:center; gap:10px; font-size:.88rem; cursor:pointer; }
+.admin-remember input { width:18px; height:18px; accent-color:#9a3422; }
 .admin-login-panel .admin-button { width:100%; margin-top:8px; }
 .admin-public-link { margin-top:32px; color:#8c2e1d!important; font-size:.82rem; font-weight:700; }
 @media(max-width:850px) { .admin-layout { grid-template-columns:1fr; } .admin-top { padding-inline:24px; } .admin-mobile-toggle { display:block; } .admin-sidebar { display:none; padding:16px 24px 25px; border-right:0; border-bottom:1px solid var(--line); } .admin-sidebar.open { display:flex; gap:18px; } .admin-main { padding:36px 24px 80px; margin:auto; } .admin-login { grid-template-columns:1fr; } .admin-login-brand { padding:25px; align-items:center; } .admin-login-brand img { width:58px; height:58px; margin:0; } .admin-login-brand span { font-size:1.4rem; } .admin-login-brand p { display:none; } .admin-login-panel { margin:auto; } }

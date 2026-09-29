@@ -66,7 +66,7 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
         <div id="lunch-panel" className="lunch-panel" role="tabpanel" aria-labelledby={`lunch-tab-${selectedDay}`} tabIndex={0}>
           {items.length === 0 ? <p className="lunch-empty">{t.empty}</p> : items.map(item =>
             <article className={`menu-row${item.available ? '' : ' is-sold-out'}`} key={item.id}><button type="button" className="menu-row-trigger" data-lunch-item-id={item.id} onClick={event => {
-              capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_name: t.title, source: 'lunch', locale })
+              capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_key: 'lunch', category_name: t.title, source: 'lunch', locale })
               trigger.current = event.currentTarget; setSelectedId(item.id)
             }}>
               <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>

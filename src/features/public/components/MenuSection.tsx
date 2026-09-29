@@ -97,7 +97,7 @@ export function MenuSection({ locale, resource, showLunch }: { locale: PublicLoc
         <div className="menu-categories">{categories.map(category => <Category key={category.id} locale={locale} category={category}
           onSelect={(itemId, trigger) => {
             const item = category.items.find(entry => entry.id === itemId)
-            if (item) capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_id: category.id, category_name: category.name, source: 'menu', locale })
+            if (item) capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_id: category.id, category_key: `menu:${category.id}`, category_name: category.name, source: 'menu', locale })
             selectedTrigger.current = trigger; setSelectedId(itemId)
           }} />)}</div>
       </div>}
