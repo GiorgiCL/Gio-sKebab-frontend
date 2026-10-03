@@ -81,7 +81,7 @@ function LanguageSelector({ locale, onSelect }: { locale: PublicLocale; onSelect
     return () => { document.removeEventListener('pointerdown', closeOutside); document.removeEventListener('keydown', closeEscape) }
   }, [])
   return <nav className="public-languages" aria-label={publicText[locale].language}><details ref={detailsRef}>
-    <summary aria-label={`${publicText[locale].language}: ${localeNames[locale]}`}>{locale.toUpperCase()} <span aria-hidden="true">⌄</span></summary>
+    <summary aria-label={`${publicText[locale].language}: ${localeNames[locale]}`}><span className="public-language-code">{locale.toUpperCase()}</span><span className="dropdown-chevron language-chevron" aria-hidden="true" /></summary>
     <div className="public-language-list">{publicLocales.map(code => <Link key={code} to={`/${code}${rest}${location.search}${location.hash}`}
       lang={code} hrefLang={code} aria-label={localeNames[code]} aria-current={locale === code ? 'page' : undefined}
       className={locale === code ? 'active' : ''} onClick={() => {
@@ -172,7 +172,7 @@ function HeaderDelivery({ locale, links, compact = false, onOpen }: { locale: Pu
   }} aria-label={`${t.orderDelivery}: ${links[0].label} (${t.newTab})`}>
     <span>{t.orderDelivery}</span>{!compact && <DeliveryProviderBrand service={links[0].label} />}</a>
   return <details ref={detailsRef} className={`nav-order${compact ? ' is-compact' : ''}`}><summary aria-label={compact ? t.orderDelivery : undefined} onClick={onOpen}>
-    <span className="nav-order-label">{t.orderDelivery}</span><span className="nav-order-chevron" aria-hidden="true">⌄</span></summary>
+    <span className="nav-order-label">{t.orderDelivery}</span><span className="dropdown-chevron nav-order-chevron" aria-hidden="true" /></summary>
     <div className="nav-order-list" role="group" aria-label={t.chooseDeliveryService}>{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => {
       const provider = deliveryProvider(link.label)
       if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'header', locale })

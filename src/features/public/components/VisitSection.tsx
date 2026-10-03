@@ -5,7 +5,7 @@ import { publicText } from '../text'
 import { lunchText } from '../lunchText'
 import type { OpeningHours, OpeningStatus, Restaurant } from '../types'
 import type { Resource } from '../usePublicResource'
-import { DeliveryProviderBrand, ReviewIcon } from './ServiceIcons'
+import { DeliveryProviderBrand, DirectionsIcon, PhoneIcon, ReviewIcon } from './ServiceIcons'
 
 const weekdays = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
 
@@ -21,9 +21,9 @@ export function VisitSection({ locale, restaurant, openingHours, openingStatus }
       <div className="visit-contact"><p className="detail-label">{t.place}</p>
         {restaurant.kind === 'loading' && <p className="visit-state" role="status">{t.visitLoading}</p>}
         {restaurant.kind === 'error' && <div className="visit-state"><p>{restaurant.status === 404 ? t.visitPreparing : t.visitUnavailable}</p>{restaurant.status !== 404 && <button type="button" className="inline-action dark" onClick={restaurant.retry}>{t.tryAgain} <span aria-hidden="true">↗</span></button>}</div>}
-        {profile && <><address>{profile.address}</address><div className="visit-actions"><a className="visit-direction" href={profile.googleMapsUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('directions_clicked', { locale })}>{t.directions} <span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>
+        {profile && <><address>{profile.address}</address><div className="visit-actions"><a className="visit-direction" href={profile.googleMapsUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('directions_clicked', { locale })}><DirectionsIcon /> {t.directions} <span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>
           <a className="visit-review" href={profile.googleMapsUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('google_review_clicked', { locale })}><ReviewIcon /> {t.reviewOnGoogle} <span aria-hidden="true">↗</span><span className="sr-only"> ({t.newTab})</span></a>
-          <a className="visit-call" href={`tel:${profile.phone.replace(/[^\d+]/g, '')}`} aria-label={lunchText[locale].call} onClick={() => capturePublicEvent('call_clicked', { placement: 'visit', locale })}><span aria-hidden="true">☎</span><span>{lunchText[locale].call}</span></a></div>
+          <a className="visit-call" href={`tel:${profile.phone.replace(/[^\d+]/g, '')}`} aria-label={lunchText[locale].call} onClick={() => capturePublicEvent('call_clicked', { placement: 'visit', locale })}><PhoneIcon /><span>{lunchText[locale].call}</span></a></div>
           {profile.email && <div className="visit-contact-links"><a href={`mailto:${profile.email}`}>{profile.email}</a></div>}</>}
       </div></div>
     <div className="hours-block"><div className="hours-heading"><h3>{t.openingHours}</h3></div>

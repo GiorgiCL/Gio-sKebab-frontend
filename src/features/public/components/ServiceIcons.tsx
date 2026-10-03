@@ -14,6 +14,19 @@ export function ReviewIcon() {
   </svg>
 }
 
+export function DirectionsIcon() {
+  return <svg className="service-icon directions-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
+    <path d="M20 10c0 5.2-8 11.5-8 11.5S4 15.2 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+    <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.7" />
+  </svg>
+}
+
+export function PhoneIcon() {
+  return <svg className="service-icon phone-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
+    <path d="m7.2 3.5 3 4.1-2 2.1a14 14 0 0 0 6.1 6.1l2.1-2 4.1 3c.5.4.7 1.1.4 1.7l-.9 1.7c-.4.7-1.2 1-2 .8C9.5 19 5 14.5 3 6c-.2-.8.1-1.6.8-2l1.7-.9c.6-.3 1.3-.1 1.7.4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+  </svg>
+}
+
 export function InstagramIcon() {
   return <svg className="service-icon instagram-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
     <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" strokeWidth="1.8" />
