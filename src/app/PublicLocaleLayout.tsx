@@ -1,14 +1,8 @@
-import { useEffect } from 'react'
 import { Outlet, useParams } from 'react-router'
 import { isPublicLocale } from '../lib/i18n/locales'
-import { startPublicAnalytics, stopPublicAnalytics } from '../lib/analytics'
 
 export function PublicLocaleLayout() {
   const { lang } = useParams()
-  useEffect(() => {
-    if (isPublicLocale(lang)) startPublicAnalytics()
-  }, [lang])
-  useEffect(() => stopPublicAnalytics, [])
   if (!isPublicLocale(lang)) return <PublicNotFound />
   return <Outlet context={lang} />
 }
