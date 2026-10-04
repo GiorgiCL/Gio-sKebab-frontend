@@ -225,6 +225,9 @@
 .footer-socials { display: flex; gap: 22px; }
 .footer-socials a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: #e3d0ba; }
 .footer-socials .service-icon { width: 18px; height: 18px; }
+.footer-legal { display:flex; flex-wrap:wrap; gap:4px 24px; margin-top:12px; color:#e3d0ba; font-size:.78rem; }
+.footer-legal a { display:inline-flex; align-items:center; min-height:44px; overflow-wrap:anywhere; }
+.footer-legal a:hover,.footer-legal a[aria-current="page"] { text-decoration:underline; text-underline-offset:4px; }
 
 @media (max-width: 1100px) {
   .menu-browser { grid-template-columns: 190px minmax(0,1fr); gap: 32px; }

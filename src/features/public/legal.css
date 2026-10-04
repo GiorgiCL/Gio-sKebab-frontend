@@ -1,0 +1,25 @@
+body:has(.information-site) { min-width:0; }
+.information-main { padding:clamp(40px,7vw,90px) 24px; color:var(--coal); background:var(--cream); }
+.information-copy { max-width:780px; margin-inline:auto; line-height:1.75; overflow-wrap:anywhere; }
+.information-copy h1 { font-size:clamp(2.6rem,6vw,4.5rem); line-height:1.12; }
+.information-copy section { margin-top:32px; }
+.information-copy h2 { margin-bottom:12px; font-size:clamp(1.7rem,3.5vw,2.4rem); line-height:1.25; }
+.information-copy p + p { margin-top:12px; }
+.information-copy a { text-decoration:underline; text-underline-offset:3px; }
+.information-copy a:hover { color:#833a24; }
+.information-copy .information-details { display:grid; gap:10px; margin-block:20px; }
+.information-details > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:8px 24px; }
+.information-details dt { font-weight:700; }
+.information-details dd { margin:0; }
+.information-details address { font-style:normal; }
+.information-home { display:inline-flex; align-items:center; min-height:44px; font-size:.85rem; }
+.information-home:hover { text-decoration:underline; }
+.information-retry { margin-top:12px; min-height:44px; padding:8px 16px; border:1px solid currentColor; background:transparent; }
+.information-site:lang(ka) .information-copy h1 { font-size:clamp(2rem,5vw,3.5rem); }
+.information-site:lang(ka) .information-copy h2 { font-size:clamp(1.35rem,3vw,2rem); }
+@media (max-width:600px) {
+  .information-main { padding-inline:18px; }
+  .information-details > div { grid-template-columns:minmax(0,1fr); gap:2px; }
+  .information-site .public-header-right { gap:12px; }
+  .information-home { max-width:150px; font-size:.75rem; }
+}
