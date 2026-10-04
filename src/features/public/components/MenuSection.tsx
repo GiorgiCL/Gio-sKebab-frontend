@@ -121,7 +121,7 @@ function MenuRow({ locale, item, onSelect }: { locale: PublicLocale; item: MenuI
   return <article className={`menu-row${item.available ? '' : ' is-sold-out'}`}>
     <button type="button" className="menu-row-trigger" data-menu-item-id={item.id} onClick={event => onSelect(item.id, event.currentTarget)}>
       <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{t.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{item.featured && <span className="menu-tag">{t.featured}</span>}{!item.available && <span className="sold-out">{t.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
-      <MenuThumbnail itemId={item.id} imageUrl={item.imageUrl} />
+      <MenuThumbnail imageUrl={item.imageUrl} />
     </button>
   </article>
 }

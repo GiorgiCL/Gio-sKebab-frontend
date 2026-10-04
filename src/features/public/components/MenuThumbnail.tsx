@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { drinkThumbnail, productImage } from '../demoProductImages'
 
 function thumbnailUrl(url: string) {
   try {
@@ -14,11 +13,10 @@ function thumbnailUrl(url: string) {
   return url
 }
 
-export function MenuThumbnail({ itemId, imageUrl, kind = 'menu' }: { itemId: number; imageUrl: string | null; kind?: 'menu' | 'lunch' }) {
+export function MenuThumbnail({ imageUrl }: { imageUrl: string | null }) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null)
-  const image = productImage(itemId, imageUrl, kind)
-  const url = image.drink ? drinkThumbnail(itemId) : image.url ? thumbnailUrl(image.url) : null
-  return <span className={`menu-row-visual${image.drink ? ' is-drink' : ''}`} aria-hidden="true">
+  const url = imageUrl ? thumbnailUrl(imageUrl) : null
+  return <span className="menu-row-visual" aria-hidden="true">
     {url && failedUrl !== url ? <img src={url} alt="" width="112" height="112" loading="lazy" decoding="async" onError={() => setFailedUrl(url)} />
       : <span className="menu-row-empty">G</span>}
     <span className="menu-row-visual-arrow">↗</span>

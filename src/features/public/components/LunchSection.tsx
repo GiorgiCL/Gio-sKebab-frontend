@@ -70,7 +70,7 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
               trigger.current = event.currentTarget; setSelectedId(item.id)
             }}>
               <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
-              <MenuThumbnail itemId={item.id} imageUrl={item.imageUrl} kind="lunch" />
+              <MenuThumbnail imageUrl={item.imageUrl} />
             </button></article>)}
         </div>
       </>}

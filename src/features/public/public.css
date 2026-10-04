@@ -394,9 +394,6 @@
 .footer-brand { font-size:clamp(2.6rem,4vw,4.5rem); }
 @media (max-width:1100px) {
   .mobile-header-order { display:block; }
-  .nav-order.is-compact summary { width:44px; padding:0; border:0; }
-  .nav-order.is-compact summary .service-icon { width:21px; height:21px; color:var(--cream); }
-  .nav-order.is-compact .nav-order-label,.nav-order.is-compact .nav-order-chevron { display:none; }
   .mobile-delivery { padding-top:20px; }
   .mobile-delivery-label { color:#cba47d; font-size:.68rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
   .mobile-delivery-links { display:flex; gap:20px; }
