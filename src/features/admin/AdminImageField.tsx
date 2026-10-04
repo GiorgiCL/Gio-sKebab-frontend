@@ -1,3 +1,4 @@
+import { safeImageUrl } from '../../lib/imageUrls'
 import { useEffect, useRef, useState } from 'react'
 import { useAdminLanguage } from './languageContext'
 
@@ -16,9 +17,9 @@ export function AdminImageField({ imageUrl, selectedFile, onSelect, onRemove, di
     const frame = requestAnimationFrame(() => setLocalPreview({ file: selectedFile, url }))
     return () => { cancelAnimationFrame(frame); URL.revokeObjectURL(url) }
   }, [selectedFile])
-  const preview = selectedFile && localPreview?.file === selectedFile ? localPreview.url : imageUrl
+  const preview = selectedFile && localPreview?.file === selectedFile ? localPreview.url : safeImageUrl(imageUrl)
   return <div className="admin-image-controls">
-    {preview && failed !== preview && <div className="admin-image-preview"><img src={preview} alt={t.imagePreview} onError={() => setFailed(preview)} /></div>}
+    {preview && failed !== preview && <div className="admin-image-preview"><img referrerPolicy="no-referrer" src={preview} alt={t.imagePreview} onError={() => setFailed(preview)} /></div>}
     {preview && failed === preview && <p role="status" className="admin-muted">{t.imageUnavailable}</p>}
     <input ref={input} className="admin-image-input" type="file" accept={acceptedTypes} aria-label={imageUrl ? t.replacePhoto : t.choosePhoto}
       disabled={disabled} onChange={event => { setFailed(null); onSelect(event.currentTarget.files?.[0] ?? null); event.currentTarget.value = '' }} />

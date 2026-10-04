@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://gioskebab.lt/lt</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/en</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ru</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ka</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/lt/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/privacy" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/privacy" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ru/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/privacy" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ka/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/privacy" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/lt/legal</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/legal" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/legal" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/legal" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/en/legal</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/legal" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/legal" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/legal" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ru/legal</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/legal" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/legal" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/legal" />
+  </url>
+  <url>
+    <loc>https://gioskebab.lt/ka/legal</loc>
+    <xhtml:link rel="alternate" hreflang="lt" href="https://gioskebab.lt/lt/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://gioskebab.lt/en/legal" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://gioskebab.lt/ru/legal" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://gioskebab.lt/ka/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gioskebab.lt/lt/legal" />
+  </url>
+</urlset>

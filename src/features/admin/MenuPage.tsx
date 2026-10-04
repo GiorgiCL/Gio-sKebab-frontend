@@ -1,3 +1,4 @@
+import { safeImageUrl } from '../../lib/imageUrls'
 import { useRef, useState } from 'react'
 import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { adminRequest, ApiError, message } from './api'
@@ -156,7 +157,7 @@ function ItemForm({ initial, categories, defaultCategoryId, onCancel, onSaved }:
     const priceText = shared.priceEur.replace(',', '.')
     if (!/^\d{1,8}(\.\d{1,2})?$/.test(priceText) || Number(priceText) < .01) { setError(t.priceInvalid); return }
     setBusy(true); setError(null)
-    const body: ItemInput = { ...shared, priceEur: Number(priceText), imageUrl: shared.imageUrl?.trim() || null,
+    const body: ItemInput = { ...shared, priceEur: Number(priceText), imageUrl: safeImageUrl(shared.imageUrl),
       name: draft.lt.first.trim(), description: draft.lt.second.trim() || null,
       translations: collectTranslations(draft, (name, description) => ({ name, description })) }
     try {

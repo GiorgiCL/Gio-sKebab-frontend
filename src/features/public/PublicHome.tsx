@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useOutletContext } from 'react-router'
-import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
+import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
 // Illustrative development asset; owner photography can replace this import later.
 import heroGrillUrl from '../../assets/restaurant/demo/hero-grill.webp'
 import { type PublicLocale } from '../../lib/i18n/locales'
@@ -33,12 +33,10 @@ export function PublicHome() {
   const orderLinks = deliveryLinks(profile)
   const showLunch = lunch.kind === 'success' && lunch.data.days.some(day => day.items.length > 0)
 
-  useEffect(() => {
-    document.documentElement.lang = locale
-    document.title = profile ? `${profile.displayName} | ${t.metaTitle}` : t.metaFallbackTitle
-    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]')
-    if (description) description.content = profile?.description?.trim().slice(0, 160) || t.metaFallbackDescription
-  }, [locale, profile, t])
+  usePageMetadata({ locale, page: '', restaurant: profile,
+    title: profile ? `${profile.displayName} | ${t.metaTitle}` : t.metaFallbackTitle,
+    description: profile?.description?.trim().slice(0, 160) || t.metaFallbackDescription,
+  })
 
   useEffect(() => {
     if (location.hash !== '#menu' && location.hash !== '#lunch') return

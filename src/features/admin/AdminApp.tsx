@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router'
-import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
+import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
 import { readAdminLocale, saveAdminLocale, type AdminLocale } from '../../lib/i18n/locales'
 import { adminRequest, clearCsrf, getCsrf, message } from './api'
 import { AuthContext, useOwner } from './authContext'
@@ -30,14 +30,14 @@ export function AdminGate() {
 }
 
 function AdminGateContent({ theme, onToggleTheme }: { theme: AdminTheme; onToggleTheme: () => void }) {
-  const { t } = useAdminLanguage()
+  const { t, locale } = useAdminLanguage()
   const [owner, setOwner] = useState<Owner | null>(null)
   const [checking, setChecking] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
   const location = useLocation()
   const navigate = useNavigate()
-  useEffect(() => { document.title = location.pathname === '/admin/login' ? `${t.signIn} | Gio's Kebab` : `${t.ownerWorkspace} | Gio's Kebab` }, [location.pathname, t])
+  usePageMetadata({ locale, title: location.pathname === '/admin/login' ? `${t.signIn} | Gio's Kebab` : `${t.ownerWorkspace} | Gio's Kebab` })
   useEffect(() => {
     let current = true
     adminRequest<Owner>('/api/admin/auth/me').then(value => { if (current) setOwner(value) })

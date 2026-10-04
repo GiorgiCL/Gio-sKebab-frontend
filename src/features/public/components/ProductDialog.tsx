@@ -1,3 +1,4 @@
+import { safeImageUrl } from '../../../lib/imageUrls'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type RefObject } from 'react'
 import type { PublicLocale } from '../../../lib/i18n/locales'
 import { formatPrice } from '../format'
@@ -86,11 +87,12 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ima
 
 function ProductImage({ item }: { item: DetailItem | undefined }) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null)
-  const imageUrl = item?.imageUrl && item.imageUrl !== failedUrl ? item.imageUrl : null
+  const safeUrl = safeImageUrl(item?.imageUrl)
+  const imageUrl = safeUrl !== failedUrl ? safeUrl : null
   return <div className={`product-image-stage${imageUrl ? ' has-image' : ''}`}>
     {imageUrl ? <>
-      <img className="product-image-ambient" src={imageUrl} alt="" aria-hidden="true" onError={() => setFailedUrl(imageUrl)} />
-      <img className="product-image-main" src={imageUrl} alt={item?.name ?? ''} loading="lazy" decoding="async" onError={() => setFailedUrl(imageUrl)} />
+      <img referrerPolicy="no-referrer" className="product-image-ambient" src={imageUrl} alt="" aria-hidden="true" onError={() => setFailedUrl(imageUrl)} />
+      <img referrerPolicy="no-referrer" className="product-image-main" src={imageUrl} alt={item?.name ?? ''} loading="lazy" decoding="async" onError={() => setFailedUrl(imageUrl)} />
     </> : <div className="product-image-empty" aria-hidden="true"><span className="product-image-emblem">G</span><span>Gio's Kebab</span></div>}
   </div>
 }

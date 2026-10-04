@@ -41,5 +41,5 @@ All API requests use `credentials: 'include'`. Owner operations use the backend'
 - `src/lib/api/` contains the environment-based API origin and small shared request helper.
 - `src/styles.css` contains global styles, self-hosted DM Sans/Instrument Serif faces, and the Tailwind entrypoint.
 
-The supplied logo lives in `src/assets/brand/`. No structured restaurant data is emitted yet because the API exposes an unstructured address and no verified image or public site URL.
+The supplied logo lives at `public/gios-kebab-logo.jpg`, shared by the UI and social metadata. Public pages use `https://gioskebab.lt` canonical URLs and locale alternatives. Homepage Restaurant structured data uses the live profile, retaining its address as text without guessing postal fields, hours, ratings or coordinates. See [repository audit cleanup](docs/AUDIT_CLEANUP.md) for indexing behavior and deployment checks.
 The public V2 layout uses two optimized WebP copies of the temporary images in `src/assets/restaurant/demo/`: one in the hero and one as decorative menu artwork. They are illustrative development assets, separate from owner-managed menu `imageUrl` values, and should be replaced with verified restaurant photography before launch.

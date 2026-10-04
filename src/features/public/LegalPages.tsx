@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Link, useOutletContext } from 'react-router'
-import logoUrl from '../../assets/brand/gios-kebab-logo.jpg'
+import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
 import type { PublicLocale } from '../../lib/i18n/locales'
 import { authorities, businessIdentity, legalText } from './legalText'
 import { LanguageSelector, SiteFooter } from './PublicNavigation'
@@ -23,11 +23,9 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
   const restaurant = usePublicResource<Restaurant>(`/api/public/restaurant?lang=${locale}`)
   const profile = restaurant.kind === 'success' ? restaurant.data : undefined
 
+  usePageMetadata({ locale, page: kind, title: `${title} | Gio's Kebab`, description })
+
   useEffect(() => {
-    document.documentElement.lang = locale
-    document.title = `${title} | Gio's Kebab`
-    const meta = document.querySelector<HTMLMetaElement>('meta[name="description"]')
-    if (meta) meta.content = description
     window.scrollTo({ top: 0, behavior: 'instant' })
     heading.current?.focus({ preventScroll: true })
   }, [locale, title, description])

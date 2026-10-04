@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { usePageMetadata } from '../../lib/pageMetadata'
 import { Link, useParams } from 'react-router'
 import { isPublicLocale } from '../../lib/i18n/locales'
 import { publicRouteErrorText } from './text'
@@ -8,7 +8,7 @@ export function PublicRouteError() {
   const { lang } = useParams()
   const locale = isPublicLocale(lang) ? lang : 'lt'
   const t = publicRouteErrorText[locale]
-  useEffect(() => { document.documentElement.lang = locale; document.title = `${t.title} | Gio's Kebab` }, [locale, t.title])
+  usePageMetadata({ locale, title: `${t.title} | Gio's Kebab`, description: t.description })
 
   return <main className="public-site public-route-error" lang={locale} translate="no">
     <div className="layout-wrap public-route-error-inner">

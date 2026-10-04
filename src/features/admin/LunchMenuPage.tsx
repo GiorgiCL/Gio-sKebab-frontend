@@ -1,3 +1,4 @@
+import { safeImageUrl } from '../../lib/imageUrls'
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { adminRequest, message } from './api'
@@ -105,7 +106,7 @@ function LunchForm({ initial, defaultDay, onCancel, onSaved }: { initial: LunchI
     if (!draft.lt.first.trim()) { setContentLocale('lt'); setError(t.lithuanianRequired); return }
     const priceText = shared.priceEur.replace(',', '.')
     if (!/^\d{1,8}(\.\d{1,2})?$/.test(priceText) || Number(priceText) < .01) { setError(t.priceInvalid); return }
-    const body: LunchInput = { ...shared, priceEur: Number(priceText), imageUrl: shared.imageUrl?.trim() || null,
+    const body: LunchInput = { ...shared, priceEur: Number(priceText), imageUrl: safeImageUrl(shared.imageUrl),
       name: draft.lt.first.trim(), description: draft.lt.second.trim() || null,
       translations: collectTranslations(draft, (name, description) => ({ name, description })) }
     setBusy(true); setError(null)
