@@ -48,7 +48,7 @@ export function SiteFooter({ locale, restaurant }: { locale: PublicLocale; resta
       <a href={restaurant?.facebookUrl || socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'facebook', locale })}><FacebookIcon /> Facebook</a>
       <a href={`mailto:${businessIdentity.email}`} aria-label={`Email ${businessIdentity.email}`}><EmailIcon /> Email</a>
     </div>
-  </div></footer>
+  </div><div className="layout-wrap footer-studio-credit"><Link to="/studio">Website by Idiomorph Studio <span aria-hidden="true">↗</span></Link></div></footer>
 }
 
 export function LegalLinks({ locale }: { locale: PublicLocale }) {

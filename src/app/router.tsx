@@ -12,6 +12,7 @@ import { PublicHome } from '../features/public/PublicHome'
 import { PublicRouteError } from '../features/public/PublicRouteError'
 
 export const router = createBrowserRouter([
+  { path: '/studio', lazy: () => import('../features/studio/StudioPage'), hydrateFallbackElement: <div role="status" aria-label="Loading Idiomorph Studio" style={{ minHeight: '100svh', display: 'grid', placeItems: 'center', background: '#08070b', color: '#b5adbe', fontSize: '10px', letterSpacing: '.18em' }}>IDIOMORPH STUDIO</div> },
   { path: '/', element: <Navigate to="/lt" replace /> },
   { path: '/:lang', Component: PublicLocaleLayout, ErrorBoundary: PublicRouteError, children: [
     { index: true, Component: PublicHome },

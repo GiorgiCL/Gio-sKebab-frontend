@@ -1,0 +1,3 @@
+# SPA deep link, kept specific so restaurant and API hosting retain their rules.
+/studio /index.html 200
+/studio/ /index.html 200
