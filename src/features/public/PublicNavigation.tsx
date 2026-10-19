@@ -40,14 +40,15 @@ export function SiteFooter({ locale, restaurant }: { locale: PublicLocale; resta
   return <footer className="site-footer"><div className="layout-wrap footer-top">
     <a href="#top">{t.backTop} <span aria-hidden="true">↑</span></a>
   </div><div className="layout-wrap footer-bottom">
-    <span>© {new Date().getFullYear()} Gio's Kebab</span>
-    <div className="footer-contact"><div className="footer-socials">
+    <span className="footer-copyright">© {new Date().getFullYear()} Gio's Kebab</span>
+    <LegalLinks locale={locale} />
+    <h2 className="footer-contact-heading">{t.visitTitle}</h2><div className="footer-socials">
       {restaurant?.instagramUrl && <a href={restaurant.instagramUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('social_clicked', { provider: 'instagram', locale })}><InstagramIcon /> Instagram <span className="sr-only">({t.newTab})</span></a>}
       <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'tiktok', locale })}><TikTokIcon /> TikTok</a>
       <a href={restaurant?.facebookUrl || socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'facebook', locale })}><FacebookIcon /> Facebook</a>
       <a href={`mailto:${businessIdentity.email}`} aria-label={`Email ${businessIdentity.email}`}><EmailIcon /> Email</a>
-    </div></div>
-  </div><div className="layout-wrap"><LegalLinks locale={locale} /></div></footer>
+    </div>
+  </div></footer>
 }
 
 export function LegalLinks({ locale }: { locale: PublicLocale }) {
