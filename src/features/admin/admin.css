@@ -312,3 +312,72 @@
 }
 .admin-root .admin-storage-note { margin-block:12px; font-size:.85rem; line-height:1.6; }
 .admin-storage-note a { text-decoration:underline; text-underline-offset:3px; }
+
+/* Selected experiment treatment: navigation, Overview and Working Hours only. */
+.admin-sidebar nav { gap:6px; }
+.admin-sidebar nav a { gap:12px; min-height:50px; padding:12px; border-radius:6px; line-height:1.5; }
+.admin-nav-icon { flex:none; width:20px; height:20px; opacity:.8; }
+.admin-brand,.admin-brand img { flex-shrink:0; }
+.admin-root:lang(ka) :is(.admin-sidebar,.admin-overview-page,.admin-hours-page) { font-family:'Noto Sans Georgian','DM Sans Variable',Arial,sans-serif; }
+.admin-main:has(.admin-overview-page,.admin-hours-page) { width:100%; padding:42px clamp(24px,4vw,60px) 100px; }
+:is(.admin-overview-page,.admin-hours-page) .admin-page-heading { align-items:center; gap:24px; padding-bottom:28px; }
+:is(.admin-overview-page,.admin-hours-page) .admin-page-heading > div { min-width:0; }
+:is(.admin-overview-page,.admin-hours-page) .admin-page-heading h1 { margin-block:10px; font-size:clamp(2rem,3vw,2.75rem); line-height:1.2; }
+:is(.admin-overview-page,.admin-hours-page) .admin-page-heading p:last-child { max-width:62ch; font-size:.9375rem; line-height:1.65; }
+:is(.admin-overview-page,.admin-hours-page) .admin-kicker { font-size:.75rem; letter-spacing:.025em; text-transform:none; }
+.admin-overview-intro { gap:24px; padding-block:24px; font-size:.9375rem; }
+.admin-overview-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; border:0; }
+.admin-overview-list a { grid-template-columns:minmax(0,1fr) 24px; gap:18px; padding:24px; border:1px solid var(--line); border-radius:8px; background:var(--white); }
+.admin-overview-list a > div { grid-column:1; }
+.admin-overview-list h2 { font-size:1.125rem; }
+.admin-overview-list p { font-size:.875rem; line-height:1.6; }
+.admin-overview-list span { grid-column:1/-1; grid-row:2; padding-top:16px; border-top:1px solid var(--line); text-align:left; color:#8a2b1b; font-weight:650; font-variant-numeric:tabular-nums; line-height:1.5; }
+.admin-overview-list b { grid-column:2; grid-row:1; align-self:start; }
+.admin-root[data-theme='dark'] .admin-overview-list span { color:#f2ad86; }
+
+.admin-hours-page :is(.admin-weekly-section,.admin-special-section,.admin-inline-form) { margin-top:24px; padding:24px; border:1px solid var(--line); border-radius:8px; background:var(--white); box-shadow:none; min-width:0; }
+.admin-hours-page .admin-inline-form { grid-template-columns:minmax(0,1fr); }
+.admin-hours-page .admin-section-header { align-items:center; }
+.admin-hours-page .admin-hours-row { grid-template-columns:minmax(100px,140px) minmax(0,1fr); padding:16px 8px; }
+.admin-hours-page .admin-hours-row > strong { padding-top:12px; }
+.admin-hours-page .admin-hours-controls { gap:18px; }
+.admin-hours-page .admin-time-pair { flex:1; min-width:0; }
+.admin-hours-page .admin-time-pair .admin-field { min-width:0; flex:1 1 130px; }
+.admin-hours-page .admin-field { gap:8px; font-size:.875rem; line-height:1.5; }
+.admin-hours-page .admin-field input { min-height:48px; padding:11px 12px; border-radius:5px; font-size:1rem; line-height:1.5; font-variant-numeric:tabular-nums; }
+.admin-hours-page .admin-check { align-items:center; padding-block:8px; }
+.admin-hours-page .admin-check span { font-size:.875rem; }
+.admin-hours-page .admin-button { min-height:46px; padding-inline:18px; border-radius:6px; font-size:.875rem; white-space:normal; text-align:center; }
+.admin-hours-page .admin-submit,.admin-hours-page .admin-editor-actions { gap:12px; padding:16px 0 max(16px,env(safe-area-inset-bottom)); background:var(--white); box-shadow:0 -10px 20px var(--white); }
+.admin-hours-page .admin-submit > span,.admin-hours-page .admin-dirty-state { font-size:.8125rem; line-height:1.5; }
+.admin-hours-page .admin-list-row { padding:18px 12px; }
+.admin-hours-page .admin-notice { border-radius:0 6px 6px 0; font-size:.875rem; line-height:1.65; }
+:is(.admin-overview-page,.admin-hours-page) .admin-empty { padding:28px; border-radius:8px; }
+:is(.admin-overview-page,.admin-hours-page) .admin-loading { margin-top:24px; padding:28px; border:1px solid var(--line); border-radius:8px; background:var(--white); }
+.admin-hours-page .admin-dialog { border-radius:10px; }
+.admin-hours-page .admin-dialog h2 { font-family:inherit; font-size:1.5rem; font-weight:700; line-height:1.4; }
+html:has(.admin-hours-page) { scroll-padding-block:24px 160px; }
+.admin-hours-page :is(input,button) { scroll-margin-block:24px 160px; }
+
+@media(max-width:850px) {
+  .admin-main:has(.admin-overview-page,.admin-hours-page) { padding:32px 24px 90px; }
+}
+@media(max-width:600px) {
+  .admin-overview-list { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .admin-overview-list a { padding:20px; }
+  .admin-overview-list span { grid-column:1/-1; }
+  .admin-main:has(.admin-overview-page,.admin-hours-page) { padding-inline:16px; }
+  :is(.admin-overview-page,.admin-hours-page) .admin-page-heading { align-items:stretch; }
+  :is(.admin-overview-page,.admin-hours-page) .admin-page-heading h1 { font-size:2rem; }
+  .admin-hours-page :is(.admin-weekly-section,.admin-special-section,.admin-inline-form) { padding:18px; }
+  .admin-hours-page .admin-section-header { align-items:flex-start; }
+  .admin-hours-page .admin-hours-row { grid-template-columns:minmax(0,1fr); gap:10px; padding-block:18px; }
+  .admin-hours-page .admin-hours-row > strong { padding-top:0; }
+  .admin-hours-page .admin-hours-controls { gap:12px; }
+  .admin-hours-page .admin-time-pair { width:100%; flex-basis:100%; gap:12px; }
+  .admin-hours-page .admin-time-pair .admin-field { flex-basis:100px; }
+  .admin-hours-page .admin-editor-actions { flex-wrap:wrap; }
+  .admin-top-actions > a { display:none; }
+  .admin-logout { width:44px; min-width:44px; padding:0; }
+  .admin-logout-label { display:none; }
+}

@@ -7,6 +7,7 @@ import { AuthContext, useOwner } from './authContext'
 import { AdminLanguageContext, useAdminLanguage } from './languageContext'
 import { Notice } from './shared'
 import { adminText } from './text'
+import { AdminNavIcon } from './AdminNavIcon'
 import type { Owner } from './types'
 import './admin.css'
 
@@ -133,20 +134,20 @@ function AdminShell({ theme, onToggleTheme }: { theme: AdminTheme; onToggleTheme
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const nav = [
-    { to: '/admin', label: t.overview, end: true }, { to: '/admin/restaurant', label: t.restaurant },
-    { to: '/admin/hours', label: t.hours }, { to: '/admin/menu', label: t.menu }, { to: '/admin/lunch-menu', label: t.lunchMenu },
-    { to: '/admin/promotions', label: t.promotions },
-  ]
+    { to: '/admin', label: t.overview, icon: 'overview', end: true }, { to: '/admin/restaurant', label: t.restaurant, icon: 'restaurant' },
+    { to: '/admin/hours', label: t.hours, icon: 'hours' }, { to: '/admin/menu', label: t.menu, icon: 'menu' }, { to: '/admin/lunch-menu', label: t.lunchMenu, icon: 'lunch' },
+    { to: '/admin/promotions', label: t.promotions, icon: 'promotions' },
+  ] as const
   const logout = async () => { if (loggingOut) return; setLoggingOut(true); setLogoutError(null); try { await signOut() } catch (error) { setLogoutError(message(error)); setLoggingOut(false) } }
   return <div className="admin-root" lang={locale} data-theme={theme}>
     <a className="admin-skip" href="#admin-main">{t.skipContent}</a>
     <header className="admin-top"><Link className="admin-brand" aria-label="Gio's Kebab" to="/admin" onClick={() => setMenuOpen(false)}><img src={logoUrl} alt="" /><span>Gio's Kebab <small>{t.owner}</small></span></Link>
       <div className="admin-top-actions"><AdminLanguageSelector /><ThemeSwitch theme={theme} onToggle={onToggleTheme} /><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link>
-        <button type="button" className="admin-logout" disabled={loggingOut} onClick={logout}>
+        <button type="button" className="admin-logout" disabled={loggingOut} onClick={logout} aria-label={loggingOut ? t.signingOut : t.signOut} title={loggingOut ? t.signingOut : t.signOut}>
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M13 7l5 5-5 5M8 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          {loggingOut ? t.signingOut : t.signOut}</button>
+          <span className="admin-logout-label">{loggingOut ? t.signingOut : t.signOut}</span></button>
         <button type="button" className="admin-mobile-toggle" aria-expanded={menuOpen} aria-controls="admin-nav" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? t.closeMenu : t.menuToggle}</button></div></header>
-    <div className="admin-layout"><aside id="admin-nav" className={`admin-sidebar${menuOpen ? ' open' : ''}`}><nav aria-label={t.adminNavigation}>{nav.map(item => <NavLink key={item.to} to={item.to} end={item.end} onClick={() => setMenuOpen(false)}>{item.label}</NavLink>)}</nav>
+    <div className="admin-layout"><aside id="admin-nav" className={`admin-sidebar${menuOpen ? ' open' : ''}`}><nav aria-label={t.adminNavigation}>{nav.map(item => <NavLink key={item.to} to={item.to} end={'end' in item ? item.end : undefined} onClick={() => setMenuOpen(false)}><AdminNavIcon destination={item.icon} />{item.label}</NavLink>)}</nav>
       <Link className="admin-sidebar-public" to="/lt" target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}>{t.viewSite} ↗</Link>
       <div className="admin-account"><span>{t.signedInAs}</span><strong>{owner.email}</strong></div></aside>
       <main id="admin-main" className="admin-main" tabIndex={-1}><Notice text={logoutError} /><Outlet /></main></div>

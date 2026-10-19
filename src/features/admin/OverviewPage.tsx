@@ -18,8 +18,8 @@ export function OverviewPage() {
     ])
     return { profile, weekly, special, categories, items, promotions }
   })
-  if (resource.loading) return <Loading />
-  if (resource.error) return <LoadError error={resource.error} retry={resource.refresh} />
+  if (resource.loading) return <div className="admin-overview-page"><Loading /></div>
+  if (resource.error) return <div className="admin-overview-page"><LoadError error={resource.error} retry={resource.refresh} /></div>
   const data = resource.data!
   const links = [
     { to: '/admin/restaurant', title: t.restaurant, status: data.profile ? data.profile.displayName : t.needsSetup, detail: t.restaurantSummary },
@@ -27,8 +27,8 @@ export function OverviewPage() {
     { to: '/admin/menu', title: t.menu, status: `${data.categories.length} ${t.categoriesCount} · ${data.items.length} ${t.itemsCount}`, detail: t.menuSummary },
     { to: '/admin/promotions', title: t.promotions, status: `${t.activeCount}: ${data.promotions.filter(row => row.active).length} · ${t.savedCount}: ${data.promotions.length}`, detail: t.promotionsSummary },
   ]
-  return <><PageHeading kicker={t.ownerWorkspace} title={t.overview} description={t.overviewDescription} />
+  return <div className="admin-overview-page"><PageHeading kicker={t.ownerWorkspace} title={t.overview} description={t.overviewDescription} />
     <div className="admin-overview-intro"><p>{data.profile && data.weekly.length === 7 ? t.overviewReady : t.overviewSetup}</p><Link to="/lt" target="_blank" rel="noopener noreferrer">{t.viewSite} ↗</Link></div>
     <div className="admin-overview-list">{links.map(link => <Link key={link.to} to={link.to}><div><h2>{link.title}</h2><p>{link.detail}</p></div><span>{link.status}</span><b aria-hidden="true">↗</b></Link>)}</div>
-  </>
+  </div>
 }

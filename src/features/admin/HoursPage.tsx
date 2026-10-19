@@ -13,7 +13,7 @@ export function HoursPage() {
   const [weeklyDirty, setWeeklyDirty] = useState(false)
   const [specialDirty, setSpecialDirty] = useState(false)
   useDirtyGuard(weeklyDirty || specialDirty)
-  return <><PageHeading kicker={t.whenOpen} title={t.hours} description={t.hoursDescription} /><WeeklyEditor onDirtyChange={setWeeklyDirty} /><SpecialEditor onDirtyChange={setSpecialDirty} /></>
+  return <div className="admin-hours-page"><PageHeading kicker={t.whenOpen} title={t.hours} description={t.hoursDescription} /><WeeklyEditor onDirtyChange={setWeeklyDirty} /><SpecialEditor onDirtyChange={setSpecialDirty} /></div>
 }
 
 function WeeklyEditor({ onDirtyChange }: { onDirtyChange: (value: boolean) => void }) {

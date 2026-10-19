@@ -609,9 +609,9 @@
 
 /* Final alignment and grouping refinements. */
 .hero-copy { padding-inline-start:0; }
-.hero h1 { margin-inline-start:0; }
+.hero h1 { margin-inline-start:0; text-indent:-.033em; }
 @media (min-width:1101px) {
-  .hero-inner { padding-inline-start:clamp(48px,4.5vw,80px); }
+  .hero-inner { padding-inline-start:clamp(24px,2.25vw,40px); }
 }
 .category-nav a.active { border-radius:6px; }
 .footer-bottom { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-areas:'copyright heading' 'legal socials'; align-items:start; gap:12px 40px; font-size:.8125rem; line-height:1.5; }
