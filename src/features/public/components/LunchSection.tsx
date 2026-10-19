@@ -1,3 +1,4 @@
+import { AllergenDetails } from './AllergenDetails'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { PublicLocale } from '../../../lib/i18n/locales'
 import { capturePublicEvent } from '../../../lib/analytics'
@@ -69,7 +70,7 @@ export function LunchSection({ locale, resource, openingStatus, openingHours }: 
               capturePublicEvent('product_opened', { product_id: item.id, product_name: item.name, category_key: 'lunch', category_name: t.title, source: 'lunch', locale })
               trigger.current = event.currentTarget; setSelectedId(item.id)
             }}>
-              <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
+              <span className="menu-row-info"><span className="menu-row-title-line"><span className="sr-only">{common.viewDetails}: </span><span className="menu-row-name">{item.name}</span>{!item.available && <span className="sold-out">{common.soldOut}</span>}</span>{item.description && <span className="menu-row-description">{item.description}</span>}<AllergenDetails info={item.allergenInfo} locale={locale} /><span className="menu-row-price">{formatPrice(item.priceEur, locale)}</span></span>
               <MenuThumbnail imageUrl={item.imageUrl} />
             </button></article>)}
         </div>

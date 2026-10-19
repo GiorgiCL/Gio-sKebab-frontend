@@ -1,3 +1,4 @@
+import type { AllergenInfo } from '../../lib/allergens'
 // These shapes mirror the backend's public response DTOs. Admin-only fields stay out of this layer.
 export interface Restaurant {
   displayName: string
@@ -46,6 +47,7 @@ export interface OpeningHours {
 }
 
 export interface MenuItem {
+  allergenInfo?: AllergenInfo
   id: number
   name: string
   description: string | null
@@ -67,6 +69,7 @@ export interface PublicMenu {
 
 export type Weekday = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
 export interface LunchItem {
+  allergenInfo?: AllergenInfo
   id: number; name: string; description: string | null; priceEur: number
   available: boolean; imageUrl: string | null
 }

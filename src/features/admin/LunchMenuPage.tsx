@@ -1,3 +1,5 @@
+import { allergenText, unverifiedAllergens } from '../../lib/allergens'
+import { AllergenEditor } from './AllergenEditor'
 import { safeImageUrl } from '../../lib/imageUrls'
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
@@ -82,10 +84,10 @@ function LunchContent({ initial }: { initial: LunchItem[] }) {
 }
 
 function LunchForm({ initial, defaultDay, onCancel, onSaved }: { initial: LunchItem | null; defaultDay: Day; onCancel: () => void; onSaved: (item: LunchItem) => void }) {
-  const { t } = useAdminLanguage()
+  const { t, locale } = useAdminLanguage()
   type Shared = Omit<LunchInput, 'name' | 'description' | 'priceEur' | 'translations'> & { priceEur: string }
-  const baseline: Shared = initial ? { dayOfWeek: initial.dayOfWeek, priceEur: String(initial.priceEur), active: initial.active, available: initial.available, displayOrder: initial.displayOrder, imageUrl: initial.imageUrl } :
-    { dayOfWeek: defaultDay, priceEur: '', active: true, available: true, displayOrder: 0, imageUrl: null }
+  const baseline: Shared = initial ? { allergenInfo: initial.allergenInfo ?? unverifiedAllergens(), dayOfWeek: initial.dayOfWeek, priceEur: String(initial.priceEur), active: initial.active, available: initial.available, displayOrder: initial.displayOrder, imageUrl: initial.imageUrl } :
+    { allergenInfo: unverifiedAllergens(), dayOfWeek: defaultDay, priceEur: '', active: true, available: true, displayOrder: 0, imageUrl: null }
   const initialDraft = makeTranslationDraft({ first: initial?.name ?? '', second: initial?.description ?? '' }, {
     en: { first: initial?.translations.en?.name ?? '', second: initial?.translations.en?.description ?? '' },
     ru: { first: initial?.translations.ru?.name ?? '', second: initial?.translations.ru?.description ?? '' },
@@ -104,6 +106,7 @@ function LunchForm({ initial, defaultDay, onCancel, onSaved }: { initial: LunchI
   const submit = async (event: FormEvent) => {
     event.preventDefault(); if (busy) return
     if (!draft.lt.first.trim()) { setContentLocale('lt'); setError(t.lithuanianRequired); return }
+    if (shared.allergenInfo.status === 'VERIFIED_WITH_ALLERGENS' && shared.allergenInfo.allergens.length === 0) { setError(allergenText[locale].chooseOne); return }
     const priceText = shared.priceEur.replace(',', '.')
     if (!/^\d{1,8}(\.\d{1,2})?$/.test(priceText) || Number(priceText) < .01) { setError(t.priceInvalid); return }
     const body: LunchInput = { ...shared, priceEur: Number(priceText), imageUrl: safeImageUrl(shared.imageUrl),
@@ -130,6 +133,7 @@ function LunchForm({ initial, defaultDay, onCancel, onSaved }: { initial: LunchI
       <Field label={t.priceEur}><input required type="text" inputMode="decimal" pattern="[0-9]{1,8}([.,][0-9]{1,2})?" value={shared.priceEur} onChange={event => setShared(current => ({ ...current, priceEur: event.target.value }))} placeholder="8,50" /></Field>
       <Field label={t.order} hint={t.itemOrderHint}><input type="number" min="0" step="1" required value={shared.displayOrder} onChange={event => setShared(current => ({ ...current, displayOrder: Number(event.target.value) }))} /></Field>
     </div></section>
+    <AllergenEditor value={shared.allergenInfo} onChange={allergenInfo => setShared(current => ({ ...current, allergenInfo }))} disabled={busy} />
     <section className="admin-shared-section" aria-label={t.visibility}><h2>{t.visibility}</h2><div className="admin-checks">
       <Checkbox label={t.active} hint={t.itemActiveHint} checked={shared.active} onChange={active => setShared(current => ({ ...current, active }))} />
       <Checkbox label={t.available} hint={t.availableHint} checked={shared.available} onChange={available => setShared(current => ({ ...current, available }))} />

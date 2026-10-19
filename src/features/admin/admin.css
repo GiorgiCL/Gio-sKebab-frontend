@@ -381,3 +381,13 @@ html:has(.admin-hours-page) { scroll-padding-block:24px 160px; }
   .admin-logout { width:44px; min-width:44px; padding:0; }
   .admin-logout-label { display:none; }
 }
+
+.admin-allergens { min-width:0; margin-inline:0; border:0; }
+.admin-allergens > legend { padding:0; font-size:1.2rem; font-weight:700; }
+.admin-allergens > .admin-muted { margin-bottom:18px; }
+.admin-allergens a { text-decoration:underline; text-underline-offset:3px; }
+.admin-allergen-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 24px; min-width:0; margin:20px 0 0; padding:16px 0 0; border:0; border-top:1px solid var(--line); }
+.admin-allergen-options legend { padding:0 0 8px; font-weight:650; }
+.admin-allergen-options .admin-check { min-width:0; align-items:flex-start; }
+.admin-allergen-options .admin-check strong { overflow-wrap:anywhere; line-height:1.55; }
+@media(max-width:600px) { .admin-allergen-options { grid-template-columns:minmax(0,1fr); } }

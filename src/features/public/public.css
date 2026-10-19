@@ -449,7 +449,7 @@
 .lunch-tabs button { display:flex; flex-direction:column; justify-content:center; gap:3px; flex:1; min-width:115px; min-height:60px; padding:8px 10px; border:1px solid #bfae96; color:#3b2d22; background:transparent; font-size:.78rem; font-weight:750; cursor:pointer; }
 .lunch-tabs button[aria-selected="true"] { color:#fff6e9; background:#34231a; border-color:#34231a; }
 .lunch-tabs small { font-size:.61rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
-.lunch-panel { max-width:980px; margin-top:20px; }
+.lunch-panel { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; width:100%; margin-top:20px; }
 .lunch-empty { padding:24px 0; color:#594836; }
 .visit-top,.hours-block { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(30px,6vw,100px); }
 .visit-top { align-items:start; padding:35px clamp(24px,3vw,46px) 44px; border-top:1px solid #b59b7e; }
@@ -629,3 +629,8 @@
   .footer-bottom .footer-contact-heading,.footer-bottom .footer-socials { justify-self:start; text-align:left; }
   .footer-bottom .footer-socials { justify-content:flex-start; }
 }
+
+/* Verified information follows the existing product description in cards and details. */
+.allergen-details { display:block; margin-top:9px; color:#655341; font-size:.78rem; line-height:1.55; overflow-wrap:anywhere; }
+.allergen-details strong { font-weight:700; }
+.product-dialog .allergen-details { margin-top:18px; font-size:.875rem; }

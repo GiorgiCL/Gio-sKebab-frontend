@@ -1,3 +1,4 @@
+import { AllergenDetails } from './AllergenDetails'
 import { safeImageUrl } from '../../../lib/imageUrls'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type RefObject } from 'react'
 import type { PublicLocale } from '../../../lib/i18n/locales'
@@ -5,7 +6,7 @@ import { formatPrice } from '../format'
 import { publicText } from '../text'
 import type { MenuItem } from '../types'
 
-type DetailItem = Pick<MenuItem, 'id' | 'name' | 'description' | 'priceEur' | 'available' | 'imageUrl'>
+type DetailItem = Pick<MenuItem, 'id' | 'name' | 'description' | 'priceEur' | 'available' | 'imageUrl' | 'allergenInfo'>
 
 interface ProductDialogProps {
   locale: PublicLocale
@@ -76,6 +77,7 @@ export function ProductDialog({ locale, itemId, item, categoryName, loading, ima
         <h2 id="product-dialog-title">{item?.name ?? (loading ? t.menuLoading : t.menuErrorTitle)}</h2>
         {item ? <>
           {item.description && <p id="product-dialog-description" className="product-dialog-description">{item.description}</p>}
+          <AllergenDetails info={item.allergenInfo} locale={locale} />
           <div className="product-dialog-bottom"><strong>{formatPrice(item.priceEur, locale)}</strong>
             {!item.available && <span className="product-dialog-sold-out">{t.soldOut}</span>}
           </div>

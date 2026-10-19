@@ -1,3 +1,4 @@
+import type { AllergenInfo } from '../../lib/allergens'
 import type { TranslationLocale } from '../../lib/i18n/locales'
 
 export type TranslationMap<T> = Partial<Record<TranslationLocale, T>>
@@ -21,11 +22,13 @@ export interface SpecialDate extends HoursRule { date: string }
 export interface CategoryInput { name: string; displayOrder: number; active: boolean; translations: TranslationMap<CategoryTranslation> }
 export interface Category extends CategoryInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<CategoryTranslation> }
 export interface ItemInput {
+  allergenInfo: AllergenInfo
   categoryId: number; name: string; description: string | null; priceEur: number
   active: boolean; available: boolean; featured: boolean; imageUrl: string | null; displayOrder: number; translations: TranslationMap<ItemTranslation>
 }
 export interface Item extends ItemInput { id: number; createdAt: string; updatedAt: string; translations: ResponseTranslations<ItemTranslation> }
 export interface LunchInput {
+  allergenInfo: AllergenInfo
   dayOfWeek: Day; name: string; description: string | null; priceEur: number
   active: boolean; available: boolean; displayOrder: number; imageUrl: string | null
   translations: TranslationMap<ItemTranslation>
