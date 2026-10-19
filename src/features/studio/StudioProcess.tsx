@@ -2,6 +2,14 @@ import { useState } from 'react'
 import { Arrow } from './StudioMark'
 import { processStages } from './config'
 
+const processImages = {
+  discover: 'A sculpted hand drawing a first thought on textured paper.',
+  design: 'Sketch lines lifting from the page into two folded surfaces.',
+  engineer: 'An illustrative system connecting a request, a workflow, and delivery.',
+  refine: 'A close study of light across brushed violet and silver metal.',
+  deliver: 'The supplied Idiomorph Studio emblem and final signature.',
+} as const
+
 export function StudioProcess({ onWatch }: { onWatch: (at: number) => void }) {
   const [active, setActive] = useState(0)
   return <section className="im-process im-section" id="approach" data-studio-chapter="3" aria-labelledby="im-process-title">
@@ -17,7 +25,7 @@ export function StudioProcess({ onWatch }: { onWatch: (at: number) => void }) {
       event.preventDefault(); setActive(next); document.getElementById(`im-process-tab-${next}`)?.focus()
     }}><span>0{index + 1}</span>{step.title}<span className="im-stage-dot" aria-hidden="true" /></button>)}</div>
     {processStages.map((step, index) => <div className="im-process-panel" role="tabpanel" tabIndex={0} id={`im-process-panel-${index}`} aria-labelledby={`im-process-tab-${index}`} key={step.id} hidden={active !== index}>
-      <figure className="im-process-figure"><img src={`/studio/process-${step.id}.webp`} srcSet={`/studio/process-${step.id}-small.webp 480w, /studio/process-${step.id}.webp 960w`} sizes="(max-width: 760px) 88vw, 46vw" alt="" width="960" height="540" loading="lazy" /><figcaption><span>FROM THOUGHT TO FORM</span><span>0{index + 1} / 05</span></figcaption></figure>
+      <figure className="im-process-figure"><img src={`/studio/v3/process-${step.id}.webp`} srcSet={`/studio/v3/process-${step.id}-small.webp 480w, /studio/v3/process-${step.id}.webp 960w`} sizes="(max-width: 760px) 88vw, 46vw" alt={processImages[step.id]} width="960" height="540" loading="lazy" /><figcaption><span>FROM THOUGHT TO FORM</span><span>0{index + 1} / 05</span></figcaption></figure>
       <div className="im-process-story"><span className="im-eyebrow">{step.title.toUpperCase()} / 0{index + 1}</span><h3>{step.heading}</h3><p>{step.copy}</p><div className="im-process-outcome"><span>WHAT TAKES SHAPE</span><p>{step.outcome}</p></div><button className="im-text-link" onClick={() => onWatch(step.time)}>See this moment in the film <Arrow diagonal /></button></div>
     </div>)}
   </section>
