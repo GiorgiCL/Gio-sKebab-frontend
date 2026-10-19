@@ -11,6 +11,7 @@ import { StudioContact } from './StudioContact'
 import { StudioPassage } from './StudioPassage'
 import './studio.css'
 import './studio-refined.css'
+import './studio-interactions.css'
 
 function useStudioIdentity() {
   useEffect(() => {
