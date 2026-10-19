@@ -10,7 +10,6 @@ const chapters = [
 
 export function StudioProgress() {
   const [active, setActive] = useState(0)
-  const [expanded, setExpanded] = useState(false)
   useEffect(() => {
     const sections = [...document.querySelectorAll<HTMLElement>('[data-studio-chapter]')]
     const visible = new Set<number>()
@@ -25,9 +24,7 @@ export function StudioProgress() {
     sections.forEach(section => observer.observe(section))
     return () => observer.disconnect()
   }, [])
-  return <nav className={`im-progress im-progress-${active}${expanded ? ' im-progress-expanded' : ''}`} aria-label="Page chapters">
-    <button className="im-chapters-toggle" aria-expanded={expanded} aria-controls="im-chapter-links" onClick={() => setExpanded(!expanded)} aria-label={expanded ? 'Collapse page chapters' : 'Expand page chapters'}><span aria-hidden="true">↳</span><span>CHAPTERS</span></button>
-    <div id="im-chapter-links">{chapters.map((chapter, index) => <a key={chapter.id} href={`#${chapter.id}`} aria-current={active === index ? 'location' : undefined} onClick={() => { setActive(index); setExpanded(false) }}><span className="im-chapter-number" aria-hidden="true">0{index + 1}</span><span className="im-chapter-label">{chapter.label}</span><span className="im-chapter-tick" aria-hidden="true" /></a>)}</div>
-    <span className="im-progress-readout" aria-hidden="true">0{active + 1}<span> / 05</span></span>
+  return <nav className={`im-progress im-progress-${active}`} aria-label="Page chapters">
+    {chapters.map((chapter, index) => <a key={chapter.id} href={`#${chapter.id}`} aria-label={`0${index + 1} ${chapter.label}`} aria-current={active === index ? 'location' : undefined} onClick={() => setActive(index)}><span className="im-chapter-number" aria-hidden="true">0{index + 1}</span><span className="im-chapter-label" aria-hidden="true">{chapter.label}</span></a>)}
   </nav>
 }

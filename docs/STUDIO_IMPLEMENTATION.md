@@ -1,3 +1,5 @@
+> Historical report. The current recovery-led implementation and test results are documented in [STUDIO_RECOVERY_V4.md](STUDIO_RECOVERY_V4.md).
+
 # Idiomorph Studio — refinement report
 
 Implemented locally on **19 October 2026**. Frontend and isolated film workspace only. **No commit, push, deployment, backend edit, or installation.**

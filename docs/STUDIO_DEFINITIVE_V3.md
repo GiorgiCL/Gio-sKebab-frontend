@@ -1,3 +1,5 @@
+> Historical report. The current recovery-led implementation and test results are documented in [STUDIO_RECOVERY_V4.md](STUDIO_RECOVERY_V4.md).
+
 # Idiomorph Studio — definitive refinement v3
 
 Local implementation completed 19 October 2026. No commit, push, deploy, reset, branch change, backend change or paid service. Required cost: **€0**. Accepted previous film, master, source ZIP and documentation are preserved.

@@ -1,20 +1,28 @@
 import { useState } from 'react'
-import { Arrow } from './StudioMark'
 import { processStages } from './config'
 
-const processImages = {
-  discover: 'A sculpted hand drawing a first thought on textured paper.',
-  design: 'Sketch lines lifting from the page into two folded surfaces.',
-  engineer: 'An illustrative system connecting a request, a workflow, and delivery.',
-  refine: 'A close study of light across brushed violet and silver metal.',
-  deliver: 'The supplied Idiomorph Studio emblem and final signature.',
-} as const
+function ProjectScene({ stage }: { stage: number }) {
+  return <div className={`im-project-scene im-project-stage-${stage}`}>
+    <div className="im-project-scene-top"><span>ONE PROJECT, TAKING SHAPE</span><span>0{stage + 1} / 05</span></div>
+    {stage === 0 ? <div className="im-project-brief"><span>The starting point</span><p className="im-project-title">A clearer way<br />to introduce your business.</p><dl><div><dt>Audience</dt><dd>People looking for your services</dd></div><div><dt>Goal</dt><dd>Help visitors understand and enquire</dd></div><div><dt>Scope</dt><dd>Website, content & enquiry flow</dd></div></dl></div> : <>
+      <div className="im-project-map"><span>Home</span><i aria-hidden="true">→</i><span>Services</span><i aria-hidden="true">→</i><span>Enquire</span></div>
+      <div className={`im-project-window${stage === 1 ? ' im-project-wireframe' : ''}`}>
+        <div className="im-project-window-top"><span>FORM / FIELD</span><span>{stage === 1 ? 'Layout direction' : 'Independent by design'}</span></div>
+        <div className="im-project-page"><div><p className="im-project-title">Room for<br />a different view.</p><p>Considered spaces.<br />Made around you.</p><span className="im-project-page-link">Explore our services</span></div><div className="im-project-material" aria-hidden="true"><span /><span /></div></div>
+      </div>
+      {stage === 2 && <div className="im-project-annotation"><span>Enquiry interface</span><i aria-hidden="true">→</i><span>Validation & API</span><i aria-hidden="true">→</i><span>Business data</span></div>}
+      {stage === 3 && <div className="im-project-review"><span>Review points</span><span>Keyboard access</span><span>Small screens</span><span>Content & speed</span></div>}
+      {stage === 4 && <div className="im-project-handover"><span>Release</span><span>Access</span><span>Documentation</span><span>Walkthrough</span></div>}
+    </>}
+    <span className="im-project-scene-note">Illustrative deliverables, not a client project.</span>
+  </div>
+}
 
-export function StudioProcess({ onWatch }: { onWatch: (at: number) => void }) {
+export function StudioProcess() {
   const [active, setActive] = useState(0)
   return <section className="im-process im-section" id="approach" data-studio-chapter="3" aria-labelledby="im-process-title">
     <div className="im-section-label"><span>03 / HOW WE WORK</span><span>A CONSIDERED PROCESS</span></div>
-    <div className="im-section-heading"><h2 id="im-process-title">Good work is<br /><em>a conversation.</em></h2><p>From the first question to the final detail.<br />Explore how an idea takes shape.</p></div>
+    <div className="im-section-heading"><h2 id="im-process-title">A clear path.<br /><em>A working product.</em></h2><p>We begin with a conversation and agree a direction.<br />Then we design, build, test and hand it over.<br />Follow one example through the five stages.</p></div>
     <div className="im-process-tabs" role="tablist" aria-label="Our creation process">{processStages.map((step, index) => <button role="tab" aria-selected={active === index} aria-controls={`im-process-panel-${index}`} id={`im-process-tab-${index}`} tabIndex={active === index ? 0 : -1} key={step.id} onClick={() => setActive(index)} onKeyDown={event => {
       let next = index
       if (event.key === 'ArrowRight') next = (index + 1) % processStages.length
@@ -25,8 +33,8 @@ export function StudioProcess({ onWatch }: { onWatch: (at: number) => void }) {
       event.preventDefault(); setActive(next); document.getElementById(`im-process-tab-${next}`)?.focus()
     }}><span>0{index + 1}</span>{step.title}<span className="im-stage-dot" aria-hidden="true" /></button>)}</div>
     {processStages.map((step, index) => <div className="im-process-panel" role="tabpanel" tabIndex={0} id={`im-process-panel-${index}`} aria-labelledby={`im-process-tab-${index}`} key={step.id} hidden={active !== index}>
-      <figure className="im-process-figure"><img src={`/studio/v3/process-${step.id}.webp`} srcSet={`/studio/v3/process-${step.id}-small.webp 480w, /studio/v3/process-${step.id}.webp 960w`} sizes="(max-width: 760px) 88vw, 46vw" alt={processImages[step.id]} width="960" height="540" loading="lazy" /><figcaption><span>FROM THOUGHT TO FORM</span><span>0{index + 1} / 05</span></figcaption></figure>
-      <div className="im-process-story"><span className="im-eyebrow">{step.title.toUpperCase()} / 0{index + 1}</span><h3>{step.heading}</h3><p>{step.copy}</p><div className="im-process-outcome"><span>WHAT TAKES SHAPE</span><p>{step.outcome}</p></div><button className="im-text-link" onClick={() => onWatch(step.time)}>See this moment in the film <Arrow diagonal /></button></div>
+      <figure className="im-process-figure"><ProjectScene stage={index} /><figcaption>{['A brief with a purpose.', 'Structure before detail.', 'Design becomes software.', 'Review the experience.', 'Prepared for handover.'][index]}</figcaption></figure>
+      <div className="im-process-story"><span className="im-eyebrow">{step.title.toUpperCase()} / 0{index + 1}</span><h3>{step.heading}</h3><p>{step.copy}</p><div className="im-process-outcome"><span>WHAT YOU LEAVE WITH</span><p>{step.outcome}</p></div></div>
     </div>)}
   </section>
 }
