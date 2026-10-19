@@ -310,3 +310,5 @@
   #admin-lunch-panel .admin-product-row { flex-direction:column; align-items:flex-start; gap:9px; }
   #admin-lunch-panel .admin-product-row .admin-actions { margin-left:0; }
 }
+.admin-root .admin-storage-note { margin-block:12px; font-size:.85rem; line-height:1.6; }
+.admin-storage-note a { text-decoration:underline; text-underline-offset:3px; }

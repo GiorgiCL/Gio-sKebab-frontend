@@ -5,6 +5,7 @@ body:has(.information-site) { min-width:0; }
 .information-copy section { margin-top:32px; }
 .information-copy h2 { margin-bottom:12px; font-size:clamp(1.7rem,3.5vw,2.4rem); line-height:1.25; }
 .information-copy p + p { margin-top:12px; }
+.information-copy h3 { margin-top:20px; font-size:1.3rem; line-height:1.4; }
 .information-copy a { text-decoration:underline; text-underline-offset:3px; }
 .information-copy a:hover { color:#833a24; }
 .information-copy .information-details { display:grid; gap:10px; margin-block:20px; }

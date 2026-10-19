@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { Link, useOutletContext } from 'react-router'
 import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
-import type { PublicLocale } from '../../lib/i18n/locales'
-import { authorities, businessIdentity, legalText } from './legalText'
+import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
+import { additionalBusinessEmail, authorities, businessIdentity, legalText, legalUpdatedDate } from './legalText'
 import { LanguageSelector, SiteFooter } from './PublicNavigation'
 import { publicText } from './text'
 import type { Restaurant } from './types'
@@ -22,6 +22,7 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
   const heading = useRef<HTMLHeadingElement>(null)
   const restaurant = usePublicResource<Restaurant>(`/api/public/restaurant?lang=${locale}`)
   const profile = restaurant.kind === 'success' ? restaurant.data : undefined
+  const extraEmail = additionalBusinessEmail(profile?.email)
 
   usePageMetadata({ locale, page: kind, title: `${title} | Gio's Kebab`, description })
 
@@ -31,7 +32,7 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
   }, [locale, title, description])
 
   const sections = kind === 'privacy'
-    ? [t.scope, t.technical, t.admin, t.cookies, t.providers, t.external]
+    ? [t.scope, t.technical, t.correspondence, t.admin, t.cookies, t.retention, t.providers, t.external]
     : [t.scope, t.external]
 
   return <div className="public-site information-site" id="top" lang={locale} translate="no">
@@ -46,6 +47,7 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
     <main id="main" className="information-main" tabIndex={-1}>
       <article className="information-copy">
         <h1 ref={heading} tabIndex={-1}>{title}</h1>
+        <p>{t.updated} <time dateTime={legalUpdatedDate}>{new Intl.DateTimeFormat(intlLocales[locale], { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${legalUpdatedDate}T00:00:00Z`))}</time></p>
         <section>
           <h2>{kind === 'privacy' ? t.controller : t.operator}</h2>
           <p>{t.operatedBy}</p>
@@ -60,6 +62,7 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
         {sections.map(section => <section key={section.title}><h2>{section.title}</h2><p>{section.body}</p></section>)}
         {kind === 'privacy' ? <section>
           <h2>{t.rights.title}</h2><p>{t.rights.body}</p>
+          <h3>{t.objection.title}</h3><p>{t.objection.body}</p>
           <p>{t.complaint} <a href={authorities.privacy.url} lang="lt">{authorities.privacy.name}</a>.</p>
         </section> : <section>
           <h2>{t.disputes.title}</h2><p>{t.disputes.body}</p>
@@ -68,13 +71,14 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
         </section>}
         <section aria-labelledby="contact-heading">
           <h2 id="contact-heading">{t.contact}</h2><p>{t.contactIntro}</p>
+          <dl className="information-details">
+            <div><dt>{t.email}</dt><dd><a href={`mailto:${businessIdentity.email}`}>{businessIdentity.email}</a></dd></div>
+            <div><dt>{t.restaurantAddress}</dt><dd><address>{profile?.address?.trim() || businessIdentity.restaurantAddress}</address></dd></div>
+            <div><dt>{t.phone}</dt><dd><a href={`tel:${(profile?.phone?.trim() || businessIdentity.phone).replace(/[^\d+]/g, '')}`}>{profile?.phone?.trim() || businessIdentity.phone}</a></dd></div>
+            {extraEmail && <div><dt>{t.email}</dt><dd><a href={`mailto:${extraEmail}`}>{extraEmail}</a></dd></div>}
+          </dl>
           {restaurant.kind === 'loading' && <p role="status">{common.visitLoading}</p>}
           {restaurant.kind === 'error' && <div><p role="status">{t.contactUnavailable}</p><button className="information-retry" type="button" onClick={restaurant.retry}>{common.retry}</button></div>}
-          {profile && <dl className="information-details">
-            {profile.address?.trim() && <div><dt>{t.restaurantAddress}</dt><dd><address>{profile.address}</address></dd></div>}
-            {profile.phone?.trim() && <div><dt>{t.phone}</dt><dd><a href={`tel:${profile.phone.replace(/[^\d+]/g, '')}`}>{profile.phone}</a></dd></div>}
-            {profile.email?.trim() && <div><dt>{t.email}</dt><dd><a href={`mailto:${profile.email}`}>{profile.email}</a></dd></div>}
-          </dl>}
         </section>
       </article>
     </main>

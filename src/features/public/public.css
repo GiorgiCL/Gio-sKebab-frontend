@@ -222,7 +222,8 @@
 .footer-top a { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .footer-top a:hover, .footer-socials a:hover { color: #f1b982; }
 .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-top: 20px; color: #baa996; font-size: .72rem; }
-.footer-socials { display: flex; gap: 22px; }
+.footer-contact { min-width:0; max-width:100%; }
+.footer-socials { display: flex; flex-wrap:wrap; gap: 4px 22px; }
 .footer-socials a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: #e3d0ba; }
 .footer-socials .service-icon { width: 18px; height: 18px; }
 .footer-legal { display:flex; flex-wrap:wrap; gap:4px 24px; margin-top:12px; color:#e3d0ba; font-size:.78rem; }

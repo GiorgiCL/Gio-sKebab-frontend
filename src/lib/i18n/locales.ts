@@ -15,15 +15,10 @@ export function isPublicLocale(value: string | undefined): value is PublicLocale
   return publicLocales.some(locale => locale === value)
 }
 
-const adminPreferenceKey = 'gios-admin-interface-language'
-let adminLocaleCache: AdminLocale | null = null
+let adminLocaleCache: AdminLocale = 'ka'
 export function readAdminLocale(): AdminLocale {
-  if (adminLocaleCache) return adminLocaleCache
-  try { adminLocaleCache = localStorage.getItem(adminPreferenceKey) === 'ru' ? 'ru' : 'ka' }
-  catch { adminLocaleCache = 'ka' }
   return adminLocaleCache
 }
 export function saveAdminLocale(locale: AdminLocale) {
   adminLocaleCache = locale
-  try { localStorage.setItem(adminPreferenceKey, locale) } catch { /* Preferences remain usable in memory. */ }
 }

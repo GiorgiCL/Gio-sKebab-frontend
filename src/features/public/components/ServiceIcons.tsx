@@ -27,6 +27,13 @@ export function PhoneIcon() {
   </svg>
 }
 
+export function EmailIcon() {
+  return <svg className="service-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
+    <rect x="2.5" y="4.5" width="19" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+    <path d="m3.5 6 8.5 7 8.5-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+}
+
 export function InstagramIcon() {
   return <svg className="service-icon instagram-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
     <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" strokeWidth="1.8" />

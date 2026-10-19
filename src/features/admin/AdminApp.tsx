@@ -11,20 +11,18 @@ import type { Owner } from './types'
 import './admin.css'
 
 type AdminTheme = 'light' | 'dark'
-const themeStorageKey = 'gios-admin-theme'
-function readTheme(): AdminTheme {
-  try { return window.localStorage.getItem(themeStorageKey) === 'dark' ? 'dark' : 'light' } catch { return 'light' }
-}
 
 export function AdminGate() {
   const [locale, setLocale] = useState<AdminLocale>(readAdminLocale)
-  const [theme, setTheme] = useState<AdminTheme>(readTheme)
+  const [theme, setTheme] = useState<AdminTheme>('light')
   const choose = (next: AdminLocale) => { saveAdminLocale(next); setLocale(next) }
-  const toggleTheme = () => setTheme(current => {
-    const next = current === 'light' ? 'dark' : 'light'
-    try { window.localStorage.setItem(themeStorageKey, next) } catch { /* Theme remains usable for this session. */ }
-    return next
-  })
+  const toggleTheme = () => setTheme(current => current === 'light' ? 'dark' : 'light')
+  useEffect(() => {
+    // Remove only obsolete preferences; authentication and other storage are untouched.
+    for (const key of ['gios-admin-interface-language', 'gios-admin-theme']) {
+      try { window.localStorage.removeItem(key) } catch { /* Preferences work in memory when storage is unavailable. */ }
+    }
+  }, [])
   useEffect(() => { document.documentElement.lang = locale }, [locale])
   return <AdminLanguageContext.Provider value={{ locale, setLocale: choose, t: adminText[locale] }}><AdminGateContent theme={theme} onToggleTheme={toggleTheme} /></AdminLanguageContext.Provider>
 }
@@ -85,14 +83,30 @@ function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner)
   const [rememberMe, setRememberMe] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [rememberSeconds, setRememberSeconds] = useState<number | null>(null)
+  const [optionsFailed, setOptionsFailed] = useState(false)
   const location = useLocation()
+  useEffect(() => {
+    let current = true
+    // This read does not acquire CSRF or create a session just to show the duration.
+    adminRequest<{ rememberMeSeconds: number }>('/api/admin/auth/session-options').then(options => {
+      if (!Number.isInteger(options.rememberMeSeconds) || options.rememberMeSeconds < 1 || options.rememberMeSeconds > 30 * 86400) throw new Error('Invalid session duration')
+      if (current) setRememberSeconds(options.rememberMeSeconds)
+    }).catch(() => { if (current) setOptionsFailed(true) })
+    return () => { current = false }
+  }, [])
+  const durationUnit = rememberSeconds && rememberSeconds % 86400 === 0 ? 'day' : rememberSeconds && rememberSeconds % 3600 === 0 ? 'hour' : rememberSeconds && rememberSeconds % 60 === 0 ? 'minute' : 'second'
+  const durationDivisor = { day: 86400, hour: 3600, minute: 60, second: 1 }[durationUnit]
+  const rememberDescription = rememberSeconds === null
+    ? optionsFailed ? t.rememberUnavailable : t.rememberLoading
+    : t.rememberExplanation.replace('{duration}', new Intl.NumberFormat(locale, { style: 'unit', unit: durationUnit, unitDisplay: 'long' }).format(rememberSeconds / durationDivisor))
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); if (busy) return
     if (new TextEncoder().encode(password).length > 72) { setError(t.passwordLong); return }
     setBusy(true); setError(null)
     try {
       await getCsrf()
-      const owner = await adminRequest<Owner>('/api/admin/auth/login', { method: 'POST', body: { email, password, rememberMe } })
+      const owner = await adminRequest<Owner>('/api/admin/auth/login', { method: 'POST', body: { email, password, rememberMe: rememberMe && rememberSeconds !== null } })
       clearCsrf()
       setPassword(''); onLogin(owner)
     } catch (error) { setError(message(error)) } finally { setBusy(false) }
@@ -103,8 +117,10 @@ function AdminLogin({ onLogin, theme, onToggleTheme }: { onLogin: (owner: Owner)
       {(location.state as { expired?: boolean } | null)?.expired && <Notice text={t.expiredSignIn} />}
       <form onSubmit={onSubmit}><label className="admin-field"><span>{t.email}</span><input autoFocus type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} /></label>
         <label className="admin-field"><span>{t.password}</span><input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
-        <label className="admin-remember"><input type="checkbox" checked={rememberMe} onChange={event => setRememberMe(event.target.checked)} /><span>{t.rememberMe}</span></label>
+        <label className="admin-remember"><input type="checkbox" checked={rememberMe} disabled={rememberSeconds === null || busy} aria-describedby="remember-explanation" onChange={event => setRememberMe(event.target.checked)} /><span>{t.rememberMe}</span></label>
+        <p className="admin-muted admin-storage-note" id="remember-explanation">{rememberDescription} <Link to={`/${locale}/privacy`}>{t.privacyNotice}</Link></p>
         <Notice text={error} /><button className="admin-button" disabled={busy} type="submit">{busy ? t.signingIn : t.signIn}</button></form>
+      <p className="admin-muted admin-storage-note">{t.preferencesMemory}</p>
       <Link className="admin-public-link" to="/lt">← {t.viewSite}</Link>
     </main>
   </div>

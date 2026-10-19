@@ -16,6 +16,11 @@ const kaImageText = {
 const ru = {
   ...ruImageText,
   rememberMe: 'Запомнить меня',
+  rememberExplanation: 'Необязательно. Максимальный срок сохранения входа на этом устройстве с помощью cookie JSESSIONID: {duration}. Вход может сохраняться после закрытия браузера. Выход удаляет cookie; при потере серверного сеанса вход прекратится раньше.',
+  rememberLoading: 'Загружаем срок сохранения входа…',
+  rememberUnavailable: 'Не удалось узнать срок сохранения входа. Можно войти без запоминания.',
+  privacyNotice: 'Уведомление о конфиденциальности',
+  preferencesMemory: 'Язык и тема хранятся только в памяти и сбрасываются при перезагрузке страницы.',
   lunchMenu: 'Обеденное меню', lunchDescription: 'Управляйте предложениями для каждого дня недели.', addLunchItem: 'Добавить обед', newLunchItem: 'Новое обеденное блюдо', editLunchItem: 'Изменить обеденное блюдо', lunchEditorHint: 'Текст для посетителей по языкам; день, цена и доступность общие.', lunchDay: 'День недели', noLunchItems: 'Обеденных блюд пока нет.', noLunchDayItems: 'На этот день предложений нет.', lunchSaved: 'Обеденное блюдо сохранено.', lunchDeleted: 'Обеденное блюдо удалено.',
   searchItems: 'Поиск позиций', searchItemsHint: 'Название на любом языке', allCategories: 'Все категории', filterStatus: 'Состояние', allItems: 'Все позиции', noMatchingItems: 'Ничего не найдено', noMatchingItemsHint: 'Измените поиск или фильтры.', clearFilters: 'Сбросить фильтры', hasImage: 'Есть изображение', imagePreview: 'Предпросмотр изображения', imageUnavailable: 'Не удалось загрузить изображение по этой ссылке.', clearImage: 'Убрать изображение', imageShared: 'Одно изображение для всех языков.', visibility: 'Видимость и наличие', imageSection: 'Изображение', activeCount: 'активно', locationContact: 'Адрес и контакты', orderingLinks: 'Заказ и другие ссылки', sharedDetailsHint: 'Эти данные одинаковы на всех языках.', lithuanianSource: 'Литовский текст — основная версия для посетителей.',
   publicContent: 'Текст для посетителей', businessDetails: 'Данные ресторана', categoryDetails: 'Настройки категории', itemDetails: 'Данные позиции', promotionDetails: 'Настройки акции', darkMode: 'Тёмная тема', lightMode: 'Светлая тема',
@@ -36,6 +41,11 @@ export const adminText: Record<AdminLocale, AdminText> = {
   ka: {
     ...kaImageText,
     rememberMe: 'დამიმახსოვრე',
+    rememberExplanation: 'არასავალდებულოა. შესვლის შენარჩუნება ამ მოწყობილობაზე JSESSIONID ქუქი-ფაილით, მაქსიმუმ {duration}, მათ შორის ბრაუზერის დახურვის შემდეგ. გამოსვლა შლის ქუქი-ფაილს; სერვერის სესიის დაკარგვისას შესვლა უფრო ადრე შეწყდება.',
+    rememberLoading: 'შესვლის შენარჩუნების ვადა იტვირთება…',
+    rememberUnavailable: 'შესვლის შენარჩუნების ვადის მიღება ვერ მოხერხდა. შეგიძლიათ შეხვიდეთ დამახსოვრების გარეშე.',
+    privacyNotice: 'კონფიდენციალურობის შესახებ',
+    preferencesMemory: 'ენა და თემა მხოლოდ მეხსიერებაში ინახება და გვერდის ხელახლა ჩატვირთვისას ნაგულისხმევ მნიშვნელობებს უბრუნდება.',
     lunchMenu: 'სადილის მენიუ', lunchDescription: 'მართეთ თითოეული დღის სადილის შეთავაზებები.', addLunchItem: 'სადილის დამატება', newLunchItem: 'ახალი სადილის კერძი', editLunchItem: 'სადილის კერძის რედაქტირება', lunchEditorHint: 'სტუმრის ტექსტი ენების მიხედვით; დღე, ფასი და ხელმისაწვდომობა საერთო მონაცემებია.', lunchDay: 'კვირის დღე', noLunchItems: 'სადილის კერძები ჯერ არ არის.', noLunchDayItems: 'ამ დღისთვის შეთავაზებები არ არის.', lunchSaved: 'სადილის კერძი შენახულია.', lunchDeleted: 'სადილის კერძი წაიშალა.',
     searchItems: 'პოზიციების ძიება', searchItemsHint: 'სახელი ნებისმიერ ენაზე', allCategories: 'ყველა კატეგორია', filterStatus: 'მდგომარეობა', allItems: 'ყველა პოზიცია', noMatchingItems: 'ვერაფერი მოიძებნა', noMatchingItemsHint: 'შეცვალეთ საძიებო ტექსტი ან ფილტრები.', clearFilters: 'ფილტრების გასუფთავება', hasImage: 'ფოტო აქვს', imagePreview: 'ფოტოს წინასწარი ნახვა', imageUnavailable: 'ფოტოს ჩვენება ვერ მოხერხდა.', clearImage: 'ფოტოს წაშლა', imageShared: 'ერთი ფოტო ყველა ენისთვის.', visibility: 'ხილვადობა და ხელმისაწვდომობა', imageSection: 'ფოტო', activeCount: 'აქტიურია', locationContact: 'მისამართი და კონტაქტი', orderingLinks: 'შეკვეთა და სხვა ბმულები', sharedDetailsHint: 'ეს მონაცემები ყველა ენაზე ერთნაირია.', lithuanianSource: 'ლიტვური ტექსტი სტუმრებისთვის ძირითადი ვერსიაა.',
     publicContent: 'ტექსტი სტუმრებისთვის', businessDetails: 'რესტორნის მონაცემები', categoryDetails: 'კატეგორიის პარამეტრები', itemDetails: 'პოზიციის მონაცემები', promotionDetails: 'აქციის პარამეტრები', darkMode: 'მუქი თემა', lightMode: 'ღია თემა',

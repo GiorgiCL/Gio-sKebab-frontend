@@ -2,9 +2,9 @@ import { useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { localeNames, publicLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { capturePublicEvent } from '../../lib/analytics'
-import { FacebookIcon, InstagramIcon, TikTokIcon } from './components/ServiceIcons'
+import { EmailIcon, FacebookIcon, InstagramIcon, TikTokIcon } from './components/ServiceIcons'
 import { publicText } from './text'
-import { legalText } from './legalText'
+import { businessIdentity, legalText } from './legalText'
 import { socialLinks } from './socialLinks'
 import type { Restaurant } from './types'
 
@@ -41,11 +41,12 @@ export function SiteFooter({ locale, restaurant }: { locale: PublicLocale; resta
     <a href="#top">{t.backTop} <span aria-hidden="true">↑</span></a>
   </div><div className="layout-wrap footer-bottom">
     <span>© {new Date().getFullYear()} Gio's Kebab</span>
-    <div className="footer-socials">
+    <div className="footer-contact"><div className="footer-socials">
       {restaurant?.instagramUrl && <a href={restaurant.instagramUrl} target="_blank" rel="noopener noreferrer" onClick={() => capturePublicEvent('social_clicked', { provider: 'instagram', locale })}><InstagramIcon /> Instagram <span className="sr-only">({t.newTab})</span></a>}
       <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" aria-label={`TikTok (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'tiktok', locale })}><TikTokIcon /> TikTok</a>
       <a href={restaurant?.facebookUrl || socialLinks.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook (${t.newTab})`} onClick={() => capturePublicEvent('social_clicked', { provider: 'facebook', locale })}><FacebookIcon /> Facebook</a>
-    </div>
+      <a href={`mailto:${businessIdentity.email}`} aria-label={`Email ${businessIdentity.email}`}><EmailIcon /> Email</a>
+    </div></div>
   </div><div className="layout-wrap"><LegalLinks locale={locale} /></div></footer>
 }
 
