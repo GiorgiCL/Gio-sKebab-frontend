@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation, useNavigationType } from 'react-router'
 import { Arrow, StudioMark } from './StudioMark'
 import { StudioFilm } from './StudioFilm'
 import { StudioServices } from './StudioServices'
@@ -42,6 +42,12 @@ function useStudioIdentity() {
 
 export function Component() {
   useStudioIdentity()
+  const navigationType = useNavigationType()
+  const { hash } = useLocation()
+  useEffect(() => {
+    // Preserve history restoration and anchors; reset only fresh Studio visits.
+    if (navigationType === 'PUSH' && !hash) window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [navigationType, hash])
   const [filmCue, setFilmCue] = useState<FilmCue>(null)
   const [motionPaused, setMotionPaused] = useState(false)
   function watchFilm(at = 0) {
