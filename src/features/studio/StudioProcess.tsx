@@ -1,32 +1,24 @@
 import { useState } from 'react'
-import { StudioMark } from './StudioMark'
+import { Arrow } from './StudioMark'
+import { processStages } from './config'
 
-const steps = [
-  { title: 'Discover', heading: 'First, the right questions.', copy: 'We find the purpose, the people, and the problem worth solving. A clear idea of what success should feel like.' },
-  { title: 'Design', heading: 'Give the idea its own language.', copy: 'We shape the structure, interactions, and visual direction into an experience with a distinct point of view.' },
-  { title: 'Engineer', heading: 'Make the ambition work.', copy: 'Interfaces, logic, and connections become working software. Every layer serves the same intention.' },
-  { title: 'Refine', heading: 'The difference is in the details.', copy: 'We test, tune, and simplify. Across screens, devices, and the small moments that make an experience feel right.' },
-  { title: 'Deliver', heading: 'Ready for what comes next.', copy: 'A considered handover brings your idea into the world, with the clarity to use it and the room to grow.' },
-]
-
-export function StudioProcess() {
+export function StudioProcess({ onWatch }: { onWatch: (at: number) => void }) {
   const [active, setActive] = useState(0)
-  return <section className="im-process im-section" id="approach" aria-labelledby="im-process-title">
-    <div className="im-section-label"><span>03 / THE TRANSFORMATION</span><span>INTENTION AT EVERY STAGE</span></div>
-    <div className="im-process-intro"><h2 id="im-process-title">Extraordinary is<br /><em>a process.</em></h2><p>Not a leap of faith.<br />A series of considered moves.</p></div>
-    <div className="im-process-body">
-      <div className={`im-process-sculpture im-stage-${active}`} aria-hidden="true"><div className="im-process-orbit" /><div className="im-process-orbit im-orbit-two" /><div className="im-process-grid" /><StudioMark className="im-process-mark" /><span className="im-seed" /><div className="im-process-coordinate">FORM / {String(active + 1).padStart(2, '0')}</div></div>
-      <div className="im-process-story"><div className="im-process-tabs" role="tablist" aria-label="Our creation process">{steps.map((step, index) => <button type="button" role="tab" aria-selected={active === index} aria-controls={`im-process-panel-${index}`} id={`im-process-tab-${index}`} tabIndex={active === index ? 0 : -1} key={step.title} onClick={() => setActive(index)} onKeyDown={event => {
-        let next = index
-        if (event.key === 'ArrowRight') next = (index + 1) % steps.length
-        else if (event.key === 'ArrowLeft') next = (index + steps.length - 1) % steps.length
-        else if (event.key === 'Home') next = 0
-        else if (event.key === 'End') next = steps.length - 1
-        else return
-        event.preventDefault(); setActive(next); document.getElementById(`im-process-tab-${next}`)?.focus()
-      }}><span>0{index + 1}</span>{step.title}</button>)}</div>
-      {steps.map((step, index) => <div role="tabpanel" tabIndex={0} id={`im-process-panel-${index}`} aria-labelledby={`im-process-tab-${index}`} hidden={active !== index} className="im-process-panel" key={step.title}><h3>{step.heading}</h3><p>{step.copy}</p><span className="im-process-count">0{index + 1} <span>/ 05</span></span></div>)}
-      </div>
-    </div>
+  return <section className="im-process im-section" id="approach" data-studio-chapter="3" aria-labelledby="im-process-title">
+    <div className="im-section-label"><span>03 / HOW WE WORK</span><span>A CONSIDERED PROCESS</span></div>
+    <div className="im-section-heading"><h2 id="im-process-title">Good work is<br /><em>a conversation.</em></h2><p>From the first question to the final detail.<br />Explore how an idea takes shape.</p></div>
+    <div className="im-process-tabs" role="tablist" aria-label="Our creation process">{processStages.map((step, index) => <button role="tab" aria-selected={active === index} aria-controls={`im-process-panel-${index}`} id={`im-process-tab-${index}`} tabIndex={active === index ? 0 : -1} key={step.id} onClick={() => setActive(index)} onKeyDown={event => {
+      let next = index
+      if (event.key === 'ArrowRight') next = (index + 1) % processStages.length
+      else if (event.key === 'ArrowLeft') next = (index + processStages.length - 1) % processStages.length
+      else if (event.key === 'Home') next = 0
+      else if (event.key === 'End') next = processStages.length - 1
+      else return
+      event.preventDefault(); setActive(next); document.getElementById(`im-process-tab-${next}`)?.focus()
+    }}><span>0{index + 1}</span>{step.title}<span className="im-stage-dot" aria-hidden="true" /></button>)}</div>
+    {processStages.map((step, index) => <div className="im-process-panel" role="tabpanel" tabIndex={0} id={`im-process-panel-${index}`} aria-labelledby={`im-process-tab-${index}`} key={step.id} hidden={active !== index}>
+      <figure className="im-process-figure"><img src={`/studio/process-${step.id}.webp`} srcSet={`/studio/process-${step.id}-small.webp 480w, /studio/process-${step.id}.webp 960w`} sizes="(max-width: 760px) 88vw, 46vw" alt="" width="960" height="540" loading="lazy" /><figcaption><span>FROM THOUGHT TO FORM</span><span>0{index + 1} / 05</span></figcaption></figure>
+      <div className="im-process-story"><span className="im-eyebrow">{step.title.toUpperCase()} / 0{index + 1}</span><h3>{step.heading}</h3><p>{step.copy}</p><div className="im-process-outcome"><span>WHAT TAKES SHAPE</span><p>{step.outcome}</p></div><button className="im-text-link" onClick={() => onWatch(step.time)}>See this moment in the film <Arrow diagonal /></button></div>
+    </div>)}
   </section>
 }

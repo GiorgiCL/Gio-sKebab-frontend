@@ -1,9 +1,6 @@
-/** The two returning apertures of the original chrome sculpture, reduced to a line. */
+/** Responsive derivatives of the studio owner's supplied identity asset. */
 export function StudioMark({ className = '' }: { className?: string }) {
-  return <svg className={className} viewBox="0 0 40 60" fill="none" aria-hidden="true">
-    <path d="M11 5C27-4 43 13 28 24L12 36C-4 47 12 64 28 54M28 54C41 44 28 32 19 29S-1 16 11 5Z" stroke="currentColor" strokeWidth="2.2" />
-    <path d="M11 5C3 18 18 25 24 29S38 43 28 54" stroke="currentColor" strokeWidth="1" opacity=".6" />
-  </svg>
+  return <img className={`im-logo-mark ${className}`} src="/studio/brand-icon.webp" srcSet="/studio/brand-icon.webp 96w, /studio/brand-logo-small.webp 400w" sizes="64px" width="96" height="120" alt="" aria-hidden="true" />
 }
 
 export function Arrow({ diagonal = false }: { diagonal?: boolean }) {
