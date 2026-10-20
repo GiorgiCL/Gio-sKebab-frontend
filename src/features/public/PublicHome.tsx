@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useOutletContext } from 'react-router'
-import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
+import { usePageMetadata } from '../../lib/pageMetadata'
+import { brandImage } from './brandImage'
 // Illustrative development asset; owner photography can replace this import later.
-import heroGrillUrl from '../../assets/restaurant/demo/hero-grill.webp'
+import { heroImage } from './heroImage'
 import { type PublicLocale } from '../../lib/i18n/locales'
 import { capturePublicEvent, deliveryProvider } from '../../lib/analytics'
 import { MenuSection } from './components/MenuSection'
@@ -52,13 +53,13 @@ export function PublicHome() {
     <a className="skip-link" href="#main">{t.skip}</a>
     <SiteHeader locale={locale} orderLinks={orderLinks} showLunch={showLunch} />
     <main id="main">
-      <Hero locale={locale} displayName={profile?.displayName} description={profile?.description} openingStatus={openingStatus} orderLinks={orderLinks} showLunch={showLunch} />
+      <Hero locale={locale} displayName={profile?.displayName} description={profile?.description} profileLoading={restaurant.kind === 'loading'} openingStatus={openingStatus} orderLinks={orderLinks} showLunch={showLunch} />
       <LunchSection locale={locale} resource={lunch} openingStatus={openingStatus} openingHours={openingHours} />
       <MenuSection locale={locale} resource={menu} showLunch={showLunch} />
       <PromotionsSection locale={locale} resource={promotions} />
       <VisitSection locale={locale} restaurant={restaurant} openingHours={openingHours} openingStatus={openingStatus} />
+      <div className="closing-signature"><img {...brandImage} sizes="clamp(148px, 15vw, 220px)" alt={t.logoAlt} loading="lazy" /></div>
     </main>
-    <div className="closing-signature"><img src={logoUrl} width="1024" height="1024" alt={t.logoAlt} /></div>
     <SiteFooter locale={locale} restaurant={profile} />
   </div>
 }
@@ -82,7 +83,7 @@ function SiteHeader({ locale, orderLinks, showLunch }: { locale: PublicLocale; o
   }
   return <header className={`site-header${menuOpen ? ' is-open' : ''}`}>
     <div className="site-header-inner layout-wrap">
-      <a className="brand-link" href="#top" aria-label={t.backTopLabel} onClick={closeMenu}><img src={logoUrl} width="1024" height="1024" alt={t.logoAlt} /></a>
+      <a className="brand-link" href="#top" aria-label={t.backTopLabel} onClick={closeMenu}><img {...brandImage} sizes="(max-width: 370px) 54px, (max-width: 1100px) 62px, 69px" alt={t.logoAlt} /></a>
       <div className="public-header-right">
         <nav className="desktop-nav" aria-label={t.primaryNav}>
           {showLunch && <a href="#lunch">{lunchText[locale].nav}</a>}<a href="#menu">{t.menu}</a><a href="#visit">{t.visit}</a>
@@ -90,7 +91,7 @@ function SiteHeader({ locale, orderLinks, showLunch }: { locale: PublicLocale; o
         </nav>
         {orderLinks.length > 0 && <div className="mobile-header-order"><HeaderDelivery locale={locale} links={orderLinks} compact onOpen={closeMenu} /></div>}
         <LanguageSelector locale={locale} onSelect={closeMenu} />
-        <button className="menu-toggle" type="button" ref={toggleRef} aria-label={menuOpen ? t.closeMenu : t.openMenu}
+        <button className="menu-toggle" type="button" ref={toggleRef} aria-label={menuOpen ? `${t.close} — ${t.closeMenu}` : `${t.menu} — ${t.openMenu}`}
           aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(open => !open)}>
           <span className="menu-toggle-label">{menuOpen ? t.close : t.menu}</span>
           <span className={`menu-toggle-lines${menuOpen ? ' is-open' : ''}`} aria-hidden="true"><i /><i /></span>
@@ -152,21 +153,23 @@ function HeaderDelivery({ locale, links, compact = false, onOpen }: { locale: Pu
   </details>
 }
 
-function Hero({ locale, displayName, description, openingStatus, orderLinks, showLunch }: {
-  locale: PublicLocale; displayName?: string; description?: string; openingStatus: Resource<OpeningStatus>; orderLinks: ReturnType<typeof deliveryLinks>; showLunch: boolean
+function Hero({ locale, displayName, description, profileLoading, openingStatus, orderLinks, showLunch }: {
+  locale: PublicLocale; displayName?: string; description?: string; profileLoading: boolean; openingStatus: Resource<OpeningStatus>; orderLinks: ReturnType<typeof deliveryLinks>; showLunch: boolean
 }) {
   const t = publicText[locale]
   const today = openingStatus.kind === 'success' ? openingStatus.data : undefined
   const browseOrderText = orderLinks.length > 1 ? t.browseOrderBoth : orderLinks[0]?.label === 'Wolt' ? t.browseOrderWolt : t.browseOrderBolt
   return <section className="hero" aria-labelledby="hero-title">
-    <div className="hero-media" aria-hidden="true"><img src={heroGrillUrl} width="1680" height="938" alt="" fetchPriority="high" decoding="async" /></div>
+    <div className="hero-media" aria-hidden="true"><img {...heroImage} width="1672" height="941" alt="" fetchPriority="high" decoding="async" /></div>
     <div className="hero-inner layout-wrap"><div className="hero-copy">
       <h1 id="hero-title">{displayName ?? "Gio's Kebab"}</h1>
-      {description?.trim() && <p className="hero-description">{description}</p>}
+      {profileLoading ? <p className="hero-description hero-description-loading" role="status"><span className="sr-only">{t.menuLoading}</span></p>
+        : description?.trim() && <p className="hero-description">{description}</p>}
       <div className="hero-ordering">
         <div className="hero-actions"><a className="button button-light" href={showLunch ? '#lunch' : '#menu'} onClick={() => capturePublicEvent('menu_explore_clicked', { locale })}>{t.exploreMenu} <span aria-hidden="true">↗</span></a></div>
-        {orderLinks.length > 0 && <><p className="hero-order-helper">{browseOrderText}</p>
-          <div className={`hero-provider-actions${orderLinks.length === 1 ? ' is-single' : ''}`} role="group" aria-label={t.orderDelivery}>
+        {(orderLinks.length > 0 || profileLoading) && <><p className={`hero-order-helper${profileLoading ? ' hero-helper-loading' : ''}`} aria-hidden={profileLoading || undefined}>{profileLoading ? t.browseOrderBoth : browseOrderText}</p>
+          <div className={`hero-provider-actions${orderLinks.length === 1 ? ' is-single' : ''}`} role="group" aria-label={t.orderDelivery} aria-hidden={profileLoading || undefined}>
+            {profileLoading && <><span className="hero-provider-action hero-provider-loading" /><span className="hero-provider-action hero-provider-loading" /></>}
             {orderLinks.map(link => <a key={link.label} className="hero-provider-action" href={link.url} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} (${t.newTab})`} onClick={() => {
               const provider = deliveryProvider(link.label)
               if (provider) capturePublicEvent('delivery_provider_clicked', { provider, placement: 'hero', locale })
@@ -175,6 +178,7 @@ function Hero({ locale, displayName, description, openingStatus, orderLinks, sho
             </a>)}
           </div></>}
       </div>
+      {openingStatus.kind === 'loading' && <div className="hero-opening hero-opening-loading" aria-hidden="true"><span className="status-dot" /><span>&nbsp;</span></div>}
       {today && <div className="hero-opening" role="status"><span className={`status-dot${today.openNow ? ' is-open' : ' is-closed'}`} aria-hidden="true" />
         <span>{openingStatusText(today, locale)}{today.source === 'SPECIAL' ? ` · ${t.specialToday}` : ''}</span></div>}
     </div></div>

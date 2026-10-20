@@ -8,6 +8,13 @@ export function PublicLocaleLayout() {
   return <Outlet context={lang} />
 }
 
+export function PublicRouteLoading() {
+  const { lang } = useParams()
+  const locale = isPublicLocale(lang) ? lang : 'lt'
+  const loading = { lt: 'Įkeliama…', en: 'Loading…', ru: 'Загрузка…', ka: 'იტვირთება…' }
+  return <main className="public-site" lang={locale} style={{ minHeight: '100svh', padding: '48px 24px' }}><p role="status">{loading[locale]}</p></main>
+}
+
 export function PublicNotFound() {
   const { lang } = useParams()
   usePageMetadata({ locale: isPublicLocale(lang) ? lang : 'lt', title: "404 | Gio's Kebab" })

@@ -1,14 +1,6 @@
 import type { PublicLocale } from '../../lib/i18n/locales'
-
-export const businessIdentity = {
-  name: 'UAB Sauce me up',
-  companyCode: '306635721',
-  vatCode: 'LT100017822119',
-  registeredOffice: 'Perkūnkiemio g. 19, LT-12120 Vilnius, Lithuania',
-  email: 'Saucemeuplt@gmail.com',
-  restaurantAddress: 'Savanorių pr. 51, LT-03149 Vilnius',
-  phone: '+370 691 82826',
-}
+import { businessIdentity, legalNavigation } from './legalNavigation'
+export { businessIdentity } from './legalNavigation'
 
 // Date of this text revision, not an assertion of owner/legal approval or publication.
 export const legalUpdatedDate = '2026-10-19'
@@ -40,7 +32,7 @@ type LegalText = {
 export const legalText: Record<PublicLocale, LegalText> = {
   lt: {
     updated: 'Tekstas atnaujintas:',
-    privacy: 'Privatumo pranešimas', legal: 'Verslo informacija', navigation: 'Teisinė informacija', home: 'Į pagrindinį puslapį',
+    ...legalNavigation.lt, home: 'Į pagrindinį puslapį',
     privacyDescription: 'Kaip Gio’s Kebab svetainėje tvarkomi duomenys, naudojami slapukai ir kaip susisiekti dėl privatumo.',
     legalDescription: 'Gio’s Kebab veiklos vykdytojo rekvizitai, restorano kontaktai ir informacija apie vartojimo ginčus.',
     controller: 'Duomenų valdytojas', operator: 'Veiklos vykdytojas', operatedBy: 'Gio’s Kebab veiklą vykdo UAB Sauce me up.',
@@ -66,7 +58,7 @@ export const legalText: Record<PublicLocale, LegalText> = {
   },
   en: {
     updated: 'Text updated:',
-    privacy: 'Privacy notice', legal: 'Business information', navigation: 'Legal information', home: 'Back to home',
+    ...legalNavigation.en, home: 'Back to home',
     privacyDescription: 'How Gio’s Kebab handles website data and cookies, and how to contact us about privacy.',
     legalDescription: 'Gio’s Kebab operator details, restaurant contacts and consumer dispute information.',
     controller: 'Data controller', operator: 'Business operator', operatedBy: 'Gio’s Kebab is operated by UAB Sauce me up.',
@@ -92,7 +84,7 @@ export const legalText: Record<PublicLocale, LegalText> = {
   },
   ru: {
     updated: 'Текст обновлён:',
-    privacy: 'Уведомление о конфиденциальности', legal: 'Информация о компании', navigation: 'Правовая информация', home: 'На главную',
+    ...legalNavigation.ru, home: 'На главную',
     privacyDescription: 'Как сайт Gio’s Kebab обрабатывает данные, использует файлы cookie и как обратиться по вопросам конфиденциальности.',
     legalDescription: 'Реквизиты компании Gio’s Kebab, контакты ресторана и информация о потребительских спорах.',
     controller: 'Контролёр персональных данных', operator: 'Компания', operatedBy: 'Деятельность Gio’s Kebab осуществляет UAB Sauce me up.',
@@ -118,7 +110,7 @@ export const legalText: Record<PublicLocale, LegalText> = {
   },
   ka: {
     updated: 'ტექსტი განახლებულია:',
-    privacy: 'კონფიდენციალურობის შესახებ', legal: 'ინფორმაცია კომპანიის შესახებ', navigation: 'სამართლებრივი ინფორმაცია', home: 'მთავარ გვერდზე',
+    ...legalNavigation.ka, home: 'მთავარ გვერდზე',
     privacyDescription: 'როგორ ამუშავებს Gio’s Kebab-ის საიტი მონაცემებს, როგორ იყენებს ქუქი-ფაილებს და როგორ დაგვიკავშირდეთ კონფიდენციალურობის საკითხებზე.',
     legalDescription: 'Gio’s Kebab-ის მმართველი კომპანიის მონაცემები, რესტორნის საკონტაქტო ინფორმაცია და მომხმარებელთა დავები.',
     controller: 'მონაცემთა დამუშავებისთვის პასუხისმგებელი პირი', operator: 'მმართველი კომპანია', operatedBy: 'Gio’s Kebab-ს მართავს UAB Sauce me up.',

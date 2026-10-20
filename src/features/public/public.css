@@ -17,6 +17,7 @@
 .public-site a { color: inherit; text-decoration: none; }
 .public-site button { font: inherit; }
 .public-site :focus-visible { outline: 3px solid #d88d43; outline-offset: 3px; }
+.public-site :is(.lunch-section, .menu-section, .visit-section, .information-main) :focus-visible { outline-color:var(--ember); }
 .public-site section[id] { scroll-margin-top: 94px; }
 .layout-wrap { width: min(100% - 72px, 1480px); margin-inline: auto; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
@@ -29,7 +30,7 @@
 .public-site h1, .public-site h2, .public-site h3 { overflow-wrap: anywhere; }
 .public-site:lang(ka) { font-family: 'Noto Sans Georgian', 'Sylfaen', sans-serif; }
 .public-site:lang(ka) h1, .public-site:lang(ka) h2, .public-site:lang(ka) h3, .public-site:lang(ka) .footer-brand, .public-site:lang(ka) .visit-contact address, .public-site:lang(ka) .mobile-nav a { font-family: 'Noto Sans Georgian', 'Sylfaen', sans-serif; letter-spacing: -.035em; }
-.public-site:lang(ka) .hero h1 { font-family: 'Instrument Serif','Noto Sans Georgian','Sylfaen',sans-serif; letter-spacing:-.045em; }
+.public-site:lang(ka) .hero h1 { font-family: 'Instrument Serif','Hero Serif Fallback','Noto Sans Georgian','Sylfaen',sans-serif; letter-spacing:-.045em; }
 
 /* One compact header stays above the menu navigator. */
 .site-header { position: sticky; top: 0; z-index: 100; height: 76px; color: var(--cream); background: #130f0c; border-bottom: 1px solid var(--dark-line); }
@@ -55,7 +56,12 @@
 .hero-inner { display: flex; align-items: center; min-height: clamp(530px, 47vw, 700px); padding-block: 65px 78px; }
 .hero-copy { width: min(58%, 690px); }
 .hero-eyebrow { color: #f0ceb0; }
-.hero h1 { max-width: 9ch; margin-top: 28px; font-size: clamp(5.3rem, 8.6vw, 10rem); line-height: .85; letter-spacing: -.045em; text-wrap: balance; }
+@font-face {
+  font-family:'Hero Serif Fallback';
+  src:local('Times New Roman'), local('Liberation Serif');
+  size-adjust:72%;
+}
+.hero h1 { font-family:'Instrument Serif','Hero Serif Fallback',Georgia,serif; max-width: 9ch; margin-top: 28px; font-size: clamp(5.3rem, 8.6vw, 10rem); line-height: .85; letter-spacing: -.045em; text-wrap: balance; }
 .hero-purpose { max-width: 36rem; margin-top: 29px!important; color: #e6cbb0; font-size: clamp(.84rem, 1.1vw, 1rem); line-height: 1.5; }
 .hero-delivery-context { margin-left: 8px; }
 .hero-delivery-context > span { padding-right: 8px; color: #d99b53; }
@@ -625,6 +631,24 @@
   .hero-inner { padding-inline-start:clamp(24px,2.25vw,40px); }
 }
 .category-nav a.active { border-radius:6px; }
+
+/* Match the responsive content rows while the owner profile is in flight.
+   Loaded, missing and error content retains its natural height. */
+.hero-description-loading {
+  min-block-size:calc(var(--hero-description-lines, 2) * 1lh);
+  background:repeating-linear-gradient(to bottom, transparent 0 .35em, #ead7c11a .35em 1em, transparent 1em 1.65em);
+  border-radius:3px;
+}
+.hero-helper-loading { visibility:hidden; }
+.hero-provider-loading { background:#ead7c10d; border-color:#ead7c11a; }
+.hero-opening-loading { visibility:hidden; }
+@media (max-width:600px) {
+  .public-site:lang(ru) .hero { --hero-description-lines:3; }
+  .public-site:lang(ka) .hero { --hero-description-lines:4; }
+}
+@media (max-width:370px) {
+  .hero { --hero-description-lines:3; }
+}
 .footer-bottom { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-areas:'copyright heading' 'legal socials'; align-items:start; gap:12px 40px; font-size:.8125rem; line-height:1.5; }
 .footer-copyright { grid-area:copyright; }
 .footer-contact-heading { grid-area:heading; }

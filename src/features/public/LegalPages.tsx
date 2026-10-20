@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link, useOutletContext } from 'react-router'
-import { logoUrl, usePageMetadata } from '../../lib/pageMetadata'
+import { usePageMetadata } from '../../lib/pageMetadata'
+import { brandImage } from './brandImage'
 import { intlLocales, type PublicLocale } from '../../lib/i18n/locales'
 import { additionalBusinessEmail, authorities, businessIdentity, legalText, legalUpdatedDate } from './legalText'
 import { LanguageSelector, SiteFooter } from './PublicNavigation'
@@ -38,7 +39,7 @@ function InformationPage({ kind }: { kind: 'privacy' | 'legal' }) {
   return <div className="public-site information-site" id="top" lang={locale} translate="no">
     <a className="skip-link" href="#main">{common.skip}</a>
     <header className="site-header"><div className="site-header-inner layout-wrap">
-      <Link className="brand-link" to={`/${locale}`} aria-label={t.home}><img src={logoUrl} width="1024" height="1024" alt={common.logoAlt} /></Link>
+      <Link className="brand-link" to={`/${locale}`} aria-label={t.home}><img {...brandImage} sizes="(max-width: 370px) 54px, (max-width: 1100px) 62px, 69px" alt={common.logoAlt} /></Link>
       <div className="public-header-right">
         <Link className="information-home" to={`/${locale}`}>{t.home}</Link>
         <LanguageSelector locale={locale} onSelect={() => {}} />

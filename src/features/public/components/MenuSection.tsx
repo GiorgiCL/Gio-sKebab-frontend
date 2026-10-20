@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 // Illustrative development asset, separate from owner-managed menu item images.
 import menuImageUrl from '../../../assets/restaurant/demo/kebab-cutout.webp'
+import menuImageSmall from '../../../assets/restaurant/demo/kebab-cutout-400.webp'
+import menuImageMedium from '../../../assets/restaurant/demo/kebab-cutout-640.webp'
 import type { PublicLocale } from '../../../lib/i18n/locales'
 import { capturePublicEvent } from '../../../lib/analytics'
 import { formatPrice } from '../format'
@@ -21,10 +23,27 @@ export function MenuSection({ locale, resource, showLunch }: { locale: PublicLoc
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const selectedTrigger = useRef<HTMLButtonElement | null>(null)
   const navRef = useRef<HTMLElement>(null)
+  const artworkRef = useRef<HTMLDivElement>(null)
+  const [artworkVisible, setArtworkVisible] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const selectedCategory = categories.find(category => category.items.some(item => item.id === selectedId))
   const selectedItem = selectedCategory?.items.find(item => item.id === selectedId)
+
+  useEffect(() => {
+    const node = artworkRef.current
+    if (!node) return
+    // Native lazy loading fetches this large decorative image well before it
+    // enters a mobile viewport. Keep its existing box; fetch near visibility.
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        setArtworkVisible(true)
+        observer.disconnect()
+      }
+    }, { rootMargin: '200px' })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (!categoryIds && !showLunch) return
@@ -81,7 +100,10 @@ export function MenuSection({ locale, resource, showLunch }: { locale: PublicLoc
     <div className="layout-wrap">
       <div className="menu-lead"><div className="menu-lead-copy">
         <h2 id="menu-title">{t.menuTitle}</h2>{categories.length > 0 && <p className="menu-lead-count">{categories.length} {t.menuCategories}</p>}</div>
-        <div className="menu-lead-image" aria-hidden="true"><img src={menuImageUrl} alt="" width="980" height="694" loading="lazy" decoding="async" /></div>
+        <div className="menu-lead-image" aria-hidden="true" ref={artworkRef}>{artworkVisible && <img src={menuImageUrl}
+          srcSet={`${menuImageSmall} 400w, ${menuImageMedium} 640w, ${menuImageUrl} 980w`}
+          sizes="(max-width: 600px) min(84vw, 370px), (max-width: 1100px) 55vw, min(57vw, 760px)"
+          alt="" width="980" height="735" loading="lazy" decoding="async" />}</div>
       </div>
       {resource.kind === 'loading' && <div className="menu-loading" role="status" aria-live="polite"><p>{t.menuLoading}</p><div className="skeleton-line" /><div className="skeleton-line short" /><div className="skeleton-line" /></div>}
       {resource.kind === 'error' && <div className="content-message"><h3>{t.menuErrorTitle}</h3><p>{t.menuError}</p><button type="button" className="inline-action" onClick={resource.retry}>{t.reloadMenu} <span aria-hidden="true">↗</span></button></div>}

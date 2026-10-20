@@ -1,12 +1,13 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
+import { restaurantHtml } from './build/restaurantHtml.ts'
 
 export default defineConfig(({ mode }) => {
   const { DEV_API_PROXY_TARGET } = loadEnv(mode, process.cwd(), 'DEV_API_PROXY_TARGET')
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), restaurantHtml()],
     server: {
       proxy: {
         '/api': {

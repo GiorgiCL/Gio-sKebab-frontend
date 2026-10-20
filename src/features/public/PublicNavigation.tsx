@@ -4,7 +4,7 @@ import { localeNames, publicLocales, type PublicLocale } from '../../lib/i18n/lo
 import { capturePublicEvent } from '../../lib/analytics'
 import { EmailIcon, FacebookIcon, InstagramIcon, TikTokIcon } from './components/ServiceIcons'
 import { publicText } from './text'
-import { businessIdentity, legalText } from './legalText'
+import { businessIdentity, legalNavigation } from './legalNavigation'
 import { socialLinks } from './socialLinks'
 import type { Restaurant } from './types'
 
@@ -24,9 +24,9 @@ export function LanguageSelector({ locale, onSelect }: { locale: PublicLocale; o
     return () => { document.removeEventListener('pointerdown', closeOutside); document.removeEventListener('keydown', closeEscape) }
   }, [])
   return <nav className="public-languages" aria-label={publicText[locale].language}><details ref={detailsRef}>
-    <summary aria-label={`${publicText[locale].language}: ${localeNames[locale]}`}><span className="public-language-code">{locale.toUpperCase()}</span><span className="dropdown-chevron language-chevron" aria-hidden="true" /></summary>
+    <summary aria-label={`${locale.toUpperCase()} — ${publicText[locale].language}: ${localeNames[locale]}`}><span className="public-language-code">{locale.toUpperCase()}</span><span className="dropdown-chevron language-chevron" aria-hidden="true" /></summary>
     <div className="public-language-list">{publicLocales.map(code => <Link key={code} to={`/${code}${rest}${location.search}${location.hash}`}
-      lang={code} hrefLang={code} aria-label={localeNames[code]} aria-current={locale === code ? 'page' : undefined}
+      lang={code} hrefLang={code} aria-current={locale === code ? 'page' : undefined}
       className={locale === code ? 'active' : ''} onClick={() => {
         if (code !== locale) capturePublicEvent('language_changed', { from_locale: locale, to_locale: code })
         if (detailsRef.current) detailsRef.current.open = false; onSelect(); requestAnimationFrame(() => detailsRef.current?.querySelector('summary')?.focus())
@@ -52,7 +52,7 @@ export function SiteFooter({ locale, restaurant }: { locale: PublicLocale; resta
 }
 
 export function LegalLinks({ locale }: { locale: PublicLocale }) {
-  const t = legalText[locale]
+  const t = legalNavigation[locale]
   return <nav className="footer-legal" aria-label={t.navigation}>
     <NavLink to={`/${locale}/privacy`}>{t.privacy}</NavLink>
     <NavLink to={`/${locale}/legal`}>{t.legal}</NavLink>
